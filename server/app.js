@@ -3,16 +3,11 @@ const createError = require('http-errors');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const bodyParser = require('body-parser')
-
+const bodyParser = require('body-parser');
 
 /* Include the express framework and invoke it*/
 const express = require('express');
 const app = express();
-
-const dotenv = require('dotenv').config();
-
-console.log(process.env.DB_PASSWORD);
 
 var indexRouter = require('./routes');
 app.use('/', indexRouter);
