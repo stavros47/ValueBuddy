@@ -7,7 +7,7 @@ router.get('/', function(req, res, next) {
   database.raw('SELECT * FROM get_batches()').then(data =>{
     if(data.rows === undefined || data.rows.length == 0){
         res.status(404);
-        res.json({message:"No businesses were Found!", batches:[]});        
+        res.json({message:"No Batches were Found!", batches:[]});        
     }else{
         res.status(200);
         res.json({batches:data.rows});
