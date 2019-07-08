@@ -40,6 +40,16 @@ router.get('/:id/Batches', function(req, res, next) {
 
 });
 
+/* GET all Templates of a specific business. */
+router.get('/:id/Templates', function(req, res, next) { 
+    database.raw(`SELECT * FROM get_business_templates(${parseInt(req.params.id)})`).then(data =>{
+        if(data.rows === undefined || data.rows.length == 0){
+            res.json({message:"Business does not have any Coupon templates!", templates:[]});        
+        }else{
+            res.json({templates:data.rows});       
+        }      
+    });    
 
+});
 
 module.exports = router;
