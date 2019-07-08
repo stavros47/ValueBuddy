@@ -7,6 +7,7 @@ const customersRoutes = require('./customers');
 const businessRoutes = require('./business');
 const batchRoutes = require('./batches');
 const templateRoutes = require('./templates');
+const couponRoutes = require('./coupons');
 
 /* GET home page. */
 router.get('/', (req,res,next)=>{
@@ -17,5 +18,6 @@ router.use('/Customers', customersRoutes);
 router.use('/Business', businessRoutes);
 router.use('/Batches', batchRoutes);
 router.use('/Templates', templateRoutes);
+router.use('/Coupons', couponRoutes);
 
 module.exports = router;
