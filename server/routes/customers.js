@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const database = require('../database');
 
-/* GET home page. */
+/* GET all Customers. */
 router.get('/', function(req, res, next) { 
   database.raw('SELECT * FROM get_customers()').then(data =>{
     if(data.rows === undefined || data.rows.length == 0){
@@ -16,7 +16,6 @@ router.get('/', function(req, res, next) {
 
 /* GET a Customer */
 router.get('/:id', function(req, res, next) { 
-    // database.raw(`SELECT * FROM get_customer($1)`,req.body.id).then(data =>{
     database.raw(`SELECT * FROM get_customer(${parseInt(req.params.id)})`).then(data =>{
       if(data.rows === undefined || data.rows.length == 0){
         res.json({message:"Customer not Found!", customer:{}});        
@@ -29,7 +28,6 @@ router.get('/:id', function(req, res, next) {
 
 /* GET a Customer's Coupons. */
 router.get('/:id/Coupons', function(req, res, next) { 
-  // database.raw(`SELECT * FROM get_customer($1)`,req.body.id).then(data =>{
   database.raw(`SELECT * FROM get_customers_coupons(${parseInt(req.params.id)})`).then(data =>{
     if(data.rows === undefined || data.rows.length == 0){
       res.json({message:"Customer did not have any coupons claimed!", coupons:[]});        
