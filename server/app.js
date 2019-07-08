@@ -5,6 +5,9 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require('body-parser')
 
+const dotenv = require('dotenv');
+dotenv.config();
+
 /* Include the express framework and invoke it*/
 const express = require('express');
 const app = express();
