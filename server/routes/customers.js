@@ -38,6 +38,30 @@ router.get('/:id/Coupons', function(req, res, next) {
 
 });
 
+/* CREATE(POST) a new Customer*/
+router.post('/', function(req, res, next) { 
+ database.raw(`SELECT * FROM insert_customer('${req.body.username}', 
+    '${req.body.password}',
+    '${req.body.first_name}',
+    '${req.body.last_name}',
+    '${req.body.gender}',
+    '${req.body.dob}',
+    '${req.body.email}',
+    '${req.body.phone}',
+    '${req.body.address1}',
+    '${req.body.address2}',
+    '${req.body.city}',
+    '${req.body.country}'
+    )`) 
+  .then(data =>{
+    if(data.rows === undefined || data.rows.length == 0){
+      res.json({message:"Customer not found", customer:{}});        
+    }else{
+      res.json({customer:data.rows});       
+    }      
+  }).catch(error =>{console.log(error); res.send("ERROR!")});    
 
+  
+});
 
 module.exports = router;
