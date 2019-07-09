@@ -28,4 +28,17 @@ router.get('/:id', function(req, res, next) {
   
 });
 
+/*GET All coupons that are instances of a specific batch */
+router.get('/:id/Coupons', function(req, res, next) { 
+    database.raw(`SELECT * FROM get_batch_coupons(${parseInt(req.params.id)})`).then(data =>{
+        if(data.rows === undefined || data.rows.length == 0){
+            res.json({message:`No coupons were claimed from batch_id:${req.params.id}`, coupons:{}});        
+        }else{
+            res.json({coupons:data.rows});       
+        }      
+    });    
+  
+});
+
+
 module.exports = router;
