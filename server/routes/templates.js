@@ -28,4 +28,15 @@ router.get('/:id', function(req, res, next) {
   
 });
 
+/* GET all Batches created from a specific template */
+router.get('/:id/Batches', function(req, res, next) { 
+    database.raw(`SELECT * FROM get_template_batches(${parseInt(req.params.id)})`).then(data =>{
+        if(data.rows === undefined || data.rows.length == 0){
+            res.json({message:`Template_id: ${req.params.id} has no batches yet.`, template:{}});        
+        }else{
+            res.json({template:data.rows});       
+        }      
+    });    
+  
+});
 module.exports = router;
