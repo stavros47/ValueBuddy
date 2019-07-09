@@ -10,13 +10,13 @@ const dotenv = require('dotenv').config();
 const express = require('express');
 const app = express();
 
-var indexRouter = require('./routes');
-app.use('/', indexRouter);
-
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+var indexRouter = require('./routes');
+app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
