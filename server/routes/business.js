@@ -52,4 +52,16 @@ router.get('/:id/Templates', function(req, res, next) {
 
 });
 
+/* GET all claimed coupons that belong to a specific business. */
+router.get('/:id/Coupons', function(req, res, next) { 
+    database.raw(`SELECT * FROM get_business_coupons(${parseInt(req.params.id)})`).then(data =>{
+        if(data.rows === undefined || data.rows.length == 0){
+            res.json({message:`No coupons from business_id:${req.params.id} were claimed.`, coupons:[]});        
+        }else{
+            res.json({coupons:data.rows});       
+        }      
+    });    
+
+});
+
 module.exports = router;
