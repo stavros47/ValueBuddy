@@ -64,4 +64,24 @@ router.post('/', function(req, res, next) {
   
 });
 
+/* update a Customer */
+// ToDo: Validation and test unique email constraints
+router.put('/:id', function(req, res, next) { 
+  database.raw(`SELECT * FROM update_customer(
+    ${parseInt(req.params.id)},
+    ${req.body.first_name ? `'${req.body.first_name}'` : `NULL`},
+    ${req.body.last_name ? `'${req.body.last_name}'` : `NULL`},
+    ${req.body.dob ? `'${req.body.dob}'` : `NULL`},
+    ${req.body.email ? `'${req.body.email}'` : `NULL`},
+    ${req.body.phone ? `'${req.body.phone}'` : `NULL`}  
+  )`).then(data =>{
+    if(data.rows === undefined || data.rows.length == 0){
+      res.json({message:"Could not update Customer"});        
+    }else{
+      res.json({result:data.rows});       
+    }      
+  }).catch(error =>{console.log(error); res.send("ERROR!")});  
+
+});
+
 module.exports = router;
