@@ -64,4 +64,30 @@ router.get('/:id/Coupons', function(req, res, next) {
 
 });
 
+/* CREATE(POST) a new Business*/
+router.post('/', function(req, res, next) { 
+    database.raw(`SELECT * FROM insert_business('${req.body.username}', 
+       '${req.body.password}',
+       '${req.body.business_name}',
+       '${req.body.business_type}',
+       '${req.body.websiteURL}',
+       '${req.body.email}',
+       '${req.body.phone}',
+       '${req.body.address1}',
+       '${req.body.address2}',
+       '${req.body.city}',
+       '${req.body.country}',
+       '${req.body.about}'
+       )`) 
+     .then(data =>{
+       if(data.rows === undefined || data.rows.length == 0){
+         res.json({message:"Business not found", business:{}});        
+       }else{
+         res.json({business:data.rows});       
+       }      
+     }).catch(error =>{console.log(error); res.send("ERROR!")});    
+   
+     
+   });
+
 module.exports = router;
