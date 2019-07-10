@@ -39,4 +39,28 @@ router.get('/:id/Batches', function(req, res, next) {
     });    
   
 });
+// SELECT * FROM insert_template(8, '25% off on all burgers', 'Percentage',25);
+/* CREATE(POST) a new coupon Template*/
+router.post('/', function(req, res, next) { 
+    // database.raw(`SELECT * FROM insert_template(${parseInt(req.params.business_id)}, 
+    //    '${req.body.description}',
+    //    '${req.body.discount_type}',
+    //    ${parseInt(req.params.discount)}
+    //    )`) 
+    database.raw(`SELECT * FROM insert_template(${parseInt(req.body.business_id)},
+    '${req.body.description}', 
+    '${req.body.discount_type}', 
+    ${parseInt(req.body.discount)})`) 
+     .then(data =>{
+       if(data.rows === undefined || data.rows.length == 0){
+         res.json({message:"Template not found", template:{}});        
+       }else{
+         res.json({template:data.rows});       
+       }      
+     }).catch(error =>{console.log(error); res.send("ERROR!")});    
+   
+     
+   });
+
+
 module.exports = router;
