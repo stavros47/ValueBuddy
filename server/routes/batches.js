@@ -40,5 +40,21 @@ router.get('/:id/Coupons', function(req, res, next) {
   
 });
 
+/* CREATE(POST) a new coupon Template*/
+router.post('/', function(req, res, next) { 
+database.raw(`SELECT * FROM insert_batch(${parseInt(req.body.template_id)},
+    ${parseInt(req.body.created_count)}, 
+    '${req.body.start_date}', 
+    '${req.body.expiry_date}', 
+    ${parseInt(req.body.status_id)})`) 
+        .then(data =>{
+        if(data.rows === undefined || data.rows.length == 0){
+            res.json({message:"Batch was not created", batch:{}});        
+        }else{
+            res.json({batch:data.rows});       
+        }      
+        }).catch(error =>{console.log(error); res.send("ERROR!")});    
+
+});
 
 module.exports = router;
