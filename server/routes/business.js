@@ -86,8 +86,29 @@ router.post('/', function(req, res, next) {
          res.json({business:data.rows});       
        }      
      }).catch(error =>{console.log(error); res.send("ERROR!")});    
-   
      
-   });
+});
+
+/* update a business */
+// ToDo: Validations and test unique email constraints
+router.put('/:id', function(req, res, next) { 
+    database.raw(`SELECT * FROM update_business(
+      ${parseInt(req.params.id)},
+      ${req.body.business_name ? `'${req.body.business_name}'` : `NULL`},
+      ${req.body.business_type ? `'${req.body.business_type}'` : `NULL`},
+      ${req.body.websiteURL ? `'${req.body.websiteURL}'` : `NULL`},
+      ${req.body.email ? `'${req.body.email}'` : `NULL`},
+      ${req.body.phone ? `'${req.body.phone}'` : `NULL`},
+      ${req.body.about ? `'${req.body.about}'` : `NULL`}  
+    )`).then(data =>{
+      if(data.rows === undefined || data.rows.length == 0 || data.rows.update_business === false){       
+        res.json({message:"Could not update Business"});        
+      }else{       
+        res.json({result:data.rows});       
+      }      
+    }).catch(error =>{console.log(error); res.send("ERROR!")});  
+  
+  });
+
 
 module.exports = router;
