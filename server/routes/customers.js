@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const database = require('../database');
+const {validate, validDetails, getByEmail} = require('../helpers/validation');
+const bcrypt = require('bcrypt');
+const  authorize  = require('../helpers/authentication');
+const Role = require('../helpers/role');
 
 /* GET all Customers. */
 router.get('/', function(req, res, next) { 
@@ -27,44 +31,64 @@ router.get('/:id', function(req, res, next) {
 });
 
 /* GET a Customer's Coupons. */
-router.get('/:id/Coupons', function(req, res, next) { 
-  database.raw(`SELECT * FROM get_customers_coupons(${parseInt(req.params.id)})`).then(data =>{
-    if(data.rows === undefined || data.rows.length == 0){
-      res.json({message:"Customer did not have any coupons claimed!", coupons:[]});        
-    }else{
-      res.json({coupons:data.rows});       
-    }      
-  });    
-
+router.get('/:id/Coupons', authorize(Role.Customer), (req, res, next)=> {
+    database.raw(`SELECT * FROM get_customers_coupons(${parseInt(req.params.id)})`).then(data =>{
+      if(data.rows === undefined || data.rows.length == 0){
+        res.json({message:"Customer did not have any coupons claimed!", coupons:[]});
+      }else{
+        res.json({coupons:data.rows});
+      }
+    });
 });
 
-/* CREATE(POST) a new Customer*/
-router.post('/', function(req, res, next) { 
- database.raw(`SELECT * FROM insert_customer('${req.body.username}', 
-    '${req.body.password}',
-    '${req.body.first_name}',
-    '${req.body.last_name}',
-    '${req.body.gender}',
-    '${req.body.dob}',
-    '${req.body.email}',
-    '${req.body.phone}',
-    '${req.body.address1}',
-    '${req.body.address2}',
-    '${req.body.city}',
-    '${req.body.country}'
-    )`) 
-  .then(data =>{
-    if(data.rows === undefined || data.rows.length == 0){
-      res.json({message:"Customer not found", customer:{}});        
-    }else{
-      res.json({customer:data.rows});       
-    }      
-  }).catch(error =>{console.log(error); res.send("ERROR!")});    
 
+/* CREATE(POST) a new Customer*/
+router.post('/', function(req, res, next) {
+  const userDetails = validate(req.body)
+  if(userDetails.allValid){
+    getByEmail(req.body.email)
+    .then(user =>{
+      if(!user){
+        //This is a unique email so hash the password before inserting into the DB
+        bcrypt.hash(req.body.password, 8)
+        .then(hash =>{
+          database.raw(`SELECT * FROM insert_customer(
+            '${hash}',
+            '${req.body.first_name}',
+            '${req.body.last_name}',
+            '${req.body.gender}',
+            '${req.body.dob}',
+            '${req.body.email}',
+            '${req.body.phone}',
+            '${req.body.address1}',
+            '${req.body.address2}',
+            '${req.body.city}',
+            '${req.body.country}'
+            )`) 
+          .then(data =>{
+            if(data.rows === undefined || data.rows.length == 0){
+              // res.json({message:"Customer not found", customer:{}});   
+              next(new Error('Customer creation failed!'));     
+            }else{
+              res.json({customer:data.rows});       
+            }      
+          }).catch(error =>{console.log(error); res.send("ERROR!")});  
+        });
+      }else{
+        //email in use
+        next(new Error('Email already in use!'))
+      }
+    });
+    
+  }else{
+    res.json({message:'Invalid User Info', ...userDetails});
+  }
   
 });
 
-/* update a Customer */
+/* update a Customer 
+Cannot change email for now ${req.body.email ? `'${req.body.email}'` : `NULL`},
+*/
 // ToDo: Validation and test unique email constraints
 router.put('/:id', function(req, res, next) { 
   database.raw(`SELECT * FROM update_customer(
@@ -72,7 +96,6 @@ router.put('/:id', function(req, res, next) {
     ${req.body.first_name ? `'${req.body.first_name}'` : `NULL`},
     ${req.body.last_name ? `'${req.body.last_name}'` : `NULL`},
     ${req.body.dob ? `'${req.body.dob}'` : `NULL`},
-    ${req.body.email ? `'${req.body.email}'` : `NULL`},
     ${req.body.phone ? `'${req.body.phone}'` : `NULL`}  
   )`).then(data =>{
     if(data.rows === undefined || data.rows.length == 0){
