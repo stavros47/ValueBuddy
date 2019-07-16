@@ -66,7 +66,7 @@ router.get('/:id/Coupons', function(req, res, next) {
 
 /* CREATE(POST) a new Business*/
 router.post('/', function(req, res, next) { 
-    database.raw(`SELECT * FROM insert_business('${req.body.username}', 
+    database.raw(`SELECT * FROM insert_business( 
        '${req.body.password}',
        '${req.body.business_name}',
        '${req.body.business_type}',
@@ -90,14 +90,14 @@ router.post('/', function(req, res, next) {
 });
 
 /* update a business */
+/*cannot change email for now   ${req.body.email ? `'${req.body.email}'` : `NULL`}, */
 // ToDo: Validations and test unique email constraints
 router.put('/:id', function(req, res, next) { 
     database.raw(`SELECT * FROM update_business(
       ${parseInt(req.params.id)},
       ${req.body.business_name ? `'${req.body.business_name}'` : `NULL`},
       ${req.body.business_type ? `'${req.body.business_type}'` : `NULL`},
-      ${req.body.websiteURL ? `'${req.body.websiteURL}'` : `NULL`},
-      ${req.body.email ? `'${req.body.email}'` : `NULL`},
+      ${req.body.websiteURL ? `'${req.body.websiteURL}'` : `NULL`},      
       ${req.body.phone ? `'${req.body.phone}'` : `NULL`},
       ${req.body.about ? `'${req.body.about}'` : `NULL`}  
     )`).then(data =>{
