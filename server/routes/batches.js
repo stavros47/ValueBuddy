@@ -1,9 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const database = require('../database');
+const  authorize  = require('../helpers/authentication');
+const Role = require('../helpers/role');
 
-/* GET all Batches. */
-router.get('/', function(req, res, next) { 
+/* GET all Batches. 
+Todo: 
+- Everyone should get only the active batches
+- If a business requests to this route expired and deactivated batches should be returned
+- perhaps I could pass the id in the sql function and change the query.
+*/
+router.get('/', authorize(), function(req, res, next) { //All authorized users
   database.raw('SELECT * FROM get_batches()').then(data =>{
     if(data.rows === undefined || data.rows.length == 0){
         res.status(404);
@@ -17,8 +24,8 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET a Batch */
-router.get('/:id', function(req, res, next) { 
-    database.raw(`SELECT * FROM get_batch(${parseInt(req.params.id)})`).then(data =>{
+router.get('/:batch_id', authorize(), function(req, res, next) { //All authorized users
+    database.raw(`SELECT * FROM get_batch(${parseInt(req.params.batch_id)})`).then(data =>{
         if(data.rows === undefined || data.rows.length == 0){
             res.json({message:"Batch not Found!", batch:{}});        
         }else{
@@ -28,11 +35,13 @@ router.get('/:id', function(req, res, next) {
   
 });
 
-/*GET All coupons that are instances of a specific batch */
-router.get('/:id/Coupons', function(req, res, next) { 
-    database.raw(`SELECT * FROM get_batch_coupons(${parseInt(req.params.id)})`).then(data =>{
+/*GET All coupons that are instances of a specific batch 
+ToDo: Only the business that owns the batch 
+*/
+router.get('/:batch_id/Coupons', authorize(Role.Admin), function(req, res, next) { //All authorized admins
+    database.raw(`SELECT * FROM get_batch_coupons(${parseInt(req.params.batch_id)})`).then(data =>{
         if(data.rows === undefined || data.rows.length == 0){
-            res.json({message:`No coupons were claimed from batch_id:${req.params.id}`, coupons:{}});        
+            res.json({message:`No coupons were claimed from batch_id:${req.params.batch_id}`, coupons:{}});        
         }else{
             res.json({coupons:data.rows});       
         }      
@@ -40,8 +49,8 @@ router.get('/:id/Coupons', function(req, res, next) {
   
 });
 
-/* CREATE(POST) a new coupon Template*/
-router.post('/', function(req, res, next) { 
+/* CREATE(POST) a new Batch*/
+router.post('/', authorize(Role.Admin), function(req, res, next) { //All authorized admins
 database.raw(`SELECT * FROM insert_batch(${parseInt(req.body.template_id)},
     ${parseInt(req.body.created_count)}, 
     '${req.body.start_date}', 
