@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const database = require('../database');
 const {validUser, getByEmail, getRole} = require('../helpers/validation');
 const bcrypt = require('bcrypt');
 
@@ -19,19 +18,21 @@ router.post('/', async (req, res, next) => {
             req.session.user_id = user.user_id;
             req.session.role = user.role;
             req.session.role_id = user.role_id;
-            res.json({message:'Login Success!'});
+            res.status(200).json({message:'Login Success!'});
           }else{
-            next(new Error('Invalid login details!'));
+            console.log('Wrong password');
+            res.status(400).json('Authentication failed');
           }          
         });
       }else{
         console.log('User does not exist!');
-        next(new Error('Invalid login details!'));        
+        res.status(400).json('Authentication failed');      
       }
     });
     
   }else{
-    next(new Error('Invalid login details!'));
+    console.log('Invalid username or password');
+    res.status(400).json('Authentication failed');
   }
   
 });

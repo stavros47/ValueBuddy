@@ -12,7 +12,7 @@ router.post('/', function(req, res, next) {
             next(new Error('Error during sign out process'));
         }
         res.clearCookie(process.env.SESS_NAME)
-        res.json({message:'You have successfuly signed out!'})
+        res.status(200).json({message:'You have successfuly signed out!'})
     });
   
 });
