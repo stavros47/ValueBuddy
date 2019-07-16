@@ -2,8 +2,14 @@ const express = require('express');
 const router = express.Router();
 const database = require('../database');
 
+const {validate, validDetails, getByEmail} = require('../helpers/validation');
+const bcrypt = require('bcrypt');
+const  authorize  = require('../helpers/authentication');
+const Role = require('../helpers/role');
+
+
 /* GET all Businesses. */
-router.get('/', function(req, res, next) { 
+router.get('/', authorize(), function(req, res, next) {  //all authorized users
   database.raw('SELECT * FROM get_businesses()').then(data =>{
     if(data.rows === undefined || data.rows.length == 0){
         res.status(404);
@@ -17,82 +23,65 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET a Business */
-router.get('/:id', function(req, res, next) { 
+router.get('/:id', authorize(), function(req, res, next) { //all authorized users
     database.raw(`SELECT * FROM get_business(${parseInt(req.params.id)})`).then(data =>{
         if(data.rows === undefined || data.rows.length == 0){
-            res.json({message:"Business not Found!", business:{}});        
+            res.status(404).json({message:"Business not Found!", business:{}});        
         }else{
-            res.json({business:data.rows});       
+            res.status(200).json({business:data.rows});       
         }      
     });    
   
 });
 
-/* GET all Batches of a specific business. */
-router.get('/:id/Batches', function(req, res, next) { 
-    database.raw(`SELECT * FROM get_business_batches(${parseInt(req.params.id)})`).then(data =>{
-        if(data.rows === undefined || data.rows.length == 0){
-            res.json({message:"Business does not have any Coupon batches!", batches:[]});        
-        }else{
-            res.json({batches:data.rows});       
-        }      
-    });    
 
-});
-
-/* GET all Templates of a specific business. */
-router.get('/:id/Templates', function(req, res, next) { 
-    database.raw(`SELECT * FROM get_business_templates(${parseInt(req.params.id)})`).then(data =>{
-        if(data.rows === undefined || data.rows.length == 0){
-            res.json({message:"Business does not have any Coupon templates!", templates:[]});        
-        }else{
-            res.json({templates:data.rows});       
-        }      
-    });    
-
-});
-
-/* GET all claimed coupons that belong to a specific business. */
-router.get('/:id/Coupons', function(req, res, next) { 
-    database.raw(`SELECT * FROM get_business_coupons(${parseInt(req.params.id)})`).then(data =>{
-        if(data.rows === undefined || data.rows.length == 0){
-            res.json({message:`No coupons from business_id:${req.params.id} were claimed.`, coupons:[]});        
-        }else{
-            res.json({coupons:data.rows});       
-        }      
-    });    
-
-});
-
-/* CREATE(POST) a new Business*/
+/* CREATE(signup) a new Business*/
 router.post('/', function(req, res, next) { 
-    database.raw(`SELECT * FROM insert_business( 
-       '${req.body.password}',
-       '${req.body.business_name}',
-       '${req.body.business_type}',
-       '${req.body.websiteURL}',
-       '${req.body.email}',
-       '${req.body.phone}',
-       '${req.body.address1}',
-       '${req.body.address2}',
-       '${req.body.city}',
-       '${req.body.country}',
-       '${req.body.about}'
-       )`) 
-     .then(data =>{
-       if(data.rows === undefined || data.rows.length == 0){
-         res.json({message:"Business not found", business:{}});        
-       }else{
-         res.json({business:data.rows});       
-       }      
-     }).catch(error =>{console.log(error); res.send("ERROR!")});    
-     
+  const userDetails = validate(req.body)
+  if(userDetails.allValid){
+    getByEmail(req.body.email)
+    .then(user =>{
+      if(!user){
+        //This is a unique email so hash the password before inserting into the DB
+        bcrypt.hash(req.body.password, 8)
+        .then(hash =>{
+          database.raw(`SELECT * FROM insert_business( 
+            '${hash}',
+            '${req.body.business_name}',
+            '${req.body.business_type}',
+            '${req.body.websiteURL}',
+            '${req.body.email}',
+            '${req.body.phone}',
+            '${req.body.address1}',
+            '${req.body.address2}',
+            '${req.body.city}',
+            '${req.body.country}',
+            '${req.body.about}'
+            )`) 
+          .then(data =>{
+            if(data.rows === undefined || data.rows.length == 0){
+              //res.json({message:"Business not found", business:{}}); 
+              res.status(400).json({message: 'Business signup failed!'});      
+            }else{
+              res.status(201).json({business:data.rows});       
+            }      
+          }).catch(error =>{console.log(error); res.send("ERROR!")});
+        });   
+      }else{
+        //email in use
+        console.log('Signup: Email already in use.');
+        res.status(400).json({message: 'Business signup failed!'});
+      }
+    });
+  }else{
+    res.json({message:'Invalid User Info', ...userDetails});
+  }
+  
 });
-
 /* update a business */
 /*cannot change email for now   ${req.body.email ? `'${req.body.email}'` : `NULL`}, */
 // ToDo: Validations and test unique email constraints
-router.put('/:id', function(req, res, next) { 
+router.put('/:id',authorize(Role.Business), function(req, res, next) { //Only the business with :id
     database.raw(`SELECT * FROM update_business(
       ${parseInt(req.params.id)},
       ${req.body.business_name ? `'${req.body.business_name}'` : `NULL`},
@@ -109,6 +98,101 @@ router.put('/:id', function(req, res, next) {
     }).catch(error =>{console.log(error); res.send("ERROR!")});  
   
   });
+
+//BATCHES:
+
+/* GET all Batches of a specific business. */
+router.get('/:id/Batches', authorize(), function(req, res, next) {  //all authorized users
+    database.raw(`SELECT * FROM get_business_batches(${parseInt(req.params.id)})`).then(data =>{
+        if(data.rows === undefined || data.rows.length == 0){
+            res.status(404).json({message:"Business does not have any Coupon batches!", batches:[]});        
+        }else{
+            res.status(200).json({batches:data.rows});       
+        }      
+    });    
+
+});
+
+/* GET all batches made from a specific template, of a specific business. */
+router.get('/:id/Templates/:template_id/Batches', authorize(Role.Business),  function(req, res, next) { //Only the business with :id
+  
+
+});
+  
+
+/* GET a batch. even inactive ones or expired */
+router.get('/:id/Batches/:batch_id', authorize([Role.Business, Role.Admin]), function(req, res, next) {  //Only the business with :id or an admin
+
+});
+
+
+/* CREATE(POST) a new Batch*/
+router.post('/:id/Templates/:template_id/Batches', authorize(Role.Business), function(req, res, next) { //Only the business with :id
+   
+  
+});
+
+
+/* Update a batch of a specific business */
+router.put('/:id/Batches/:batch_id', authorize([Role.Business, Role.Admin]), function(req, res, next) {  //Only the business with :id or an admin
+ 
+
+});
+
+
+//TEMPLATES:
+
+/* GET all Templates of a specific business. */
+router.get('/:id/Templates', authorize(Role.Business),  function(req, res, next) { //Only the business with :id
+    database.raw(`SELECT * FROM get_business_templates(${parseInt(req.params.id)})`).then(data =>{
+        if(data.rows === undefined || data.rows.length == 0){
+            res.status(404).json({message:"Business does not have any Coupon templates!", templates:[]});        
+        }else{
+            res.status(200).json({templates:data.rows});       
+        }      
+    });    
+
+});
+
+/* GET a Template of a specific business. */
+router.get('/:id/Templates/:template_id', authorize(Role.Business),  function(req, res, next) { //Only the business with :id
+   
+
+});
+
+
+/* CREATE(POST) a new coupon Template*/
+router.post('/:id/Templates', authorize(Role.Admin), function(req, res, next) { //Only the business with :id
+  
+   
+});
+
+/* Update a Template of a specific business. */
+router.put('/:id/Templates/:template_id', authorize(Role.Business),  function(req, res, next) { //Only the business with :id
+   
+
+});
+
+//Coupons
+
+/* GET all claimed coupons from ALL BATCHES, that belong to a specific business. */
+router.get('/:id/Coupons', authorize(Role.Business), function(req, res, next) { //Only the business with :id
+    database.raw(`SELECT * FROM get_business_coupons(${parseInt(req.params.id)})`).then(data =>{
+        if(data.rows === undefined || data.rows.length == 0){
+          res.status(404).json({message:`No coupons from business_id:${req.params.id} were claimed.`, coupons:[]});        
+        }else{
+          res.status(200).json({coupons:data.rows});       
+        }      
+    });    
+
+});
+
+/* GET all coupons for a batch */
+router.get('/:id/Batches/:batch_id/Coupons', authorize(Role.Business), function(req, res, next) {  //Only the business with :id
+ 
+
+});
+
 
 
 module.exports = router;

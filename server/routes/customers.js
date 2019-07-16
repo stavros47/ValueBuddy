@@ -7,7 +7,7 @@ const  authorize  = require('../helpers/authentication');
 const Role = require('../helpers/role');
 
 /* GET all Customers. */
-router.get('/', function(req, res, next) { 
+router.get('/', authorize(Role.Admin),  function(req, res, next) { //Only admins
   database.raw('SELECT * FROM get_customers()').then(data =>{
     if(data.rows === undefined || data.rows.length == 0){
       res.json({message:"Customers not Found!", customers:[]});        
@@ -19,7 +19,7 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET a Customer */
-router.get('/:id', function(req, res, next) { 
+router.get('/:id', authorize(), function(req, res, next) { //All authorized users
     database.raw(`SELECT * FROM get_customer(${parseInt(req.params.id)})`).then(data =>{
       if(data.rows === undefined || data.rows.length == 0){
         res.json({message:"Customer not Found!", customer:{}});        
@@ -31,7 +31,7 @@ router.get('/:id', function(req, res, next) {
 });
 
 /* GET a Customer's Coupons. */
-router.get('/:id/Coupons', authorize(Role.Customer), (req, res, next)=> {
+router.get('/:id/Coupons', authorize([Role.Customer, Role.Admin]), (req, res, next) => { //Customer with :id & admins
     database.raw(`SELECT * FROM get_customers_coupons(${parseInt(req.params.id)})`).then(data =>{
       if(data.rows === undefined || data.rows.length == 0){
         res.json({message:"Customer did not have any coupons claimed!", coupons:[]});
@@ -40,6 +40,18 @@ router.get('/:id/Coupons', authorize(Role.Customer), (req, res, next)=> {
       }
     });
 });
+
+/* GET a Customer's specific Coupon. */
+router.get('/:id/Coupons/:coupon_id', authorize([Role.Customer, Role.Admin]), (req, res, next) => { //Customer with :id & admins
+  // database.raw(`SELECT * FROM get_customers_coupons(${parseInt(req.params.id)})`).then(data =>{
+  //   if(data.rows === undefined || data.rows.length == 0){
+  //     res.json({message:"Customer did not have any coupons claimed!", coupons:[]});
+  //   }else{
+  //     res.json({coupons:data.rows});
+  //   }
+  // });
+});
+
 
 
 /* CREATE(POST) a new Customer*/
@@ -68,15 +80,15 @@ router.post('/', function(req, res, next) {
           .then(data =>{
             if(data.rows === undefined || data.rows.length == 0){
               // res.json({message:"Customer not found", customer:{}});   
-              next(new Error('Customer creation failed!'));     
+              res.status(400).json({message: 'Customer signup failed!'});    
             }else{
-              res.json({customer:data.rows});       
+              res.status(201).json({customer:data.rows});       
             }      
-          }).catch(error =>{console.log(error); res.send("ERROR!")});  
+          }).catch(error =>{console.log(error); res.send("Customer signup failed!")});  
         });
       }else{
-        //email in use
-        next(new Error('Email already in use!'))
+        console.log('Signup: Email already in use.');
+        res.status(400).json({message: 'Customer signup failed!'});
       }
     });
     
@@ -90,7 +102,7 @@ router.post('/', function(req, res, next) {
 Cannot change email for now ${req.body.email ? `'${req.body.email}'` : `NULL`},
 */
 // ToDo: Validation and test unique email constraints
-router.put('/:id', function(req, res, next) { 
+router.put('/:id', authorize(Role.Customer), function(req, res, next) { //Customer with :id
   database.raw(`SELECT * FROM update_customer(
     ${parseInt(req.params.id)},
     ${req.body.first_name ? `'${req.body.first_name}'` : `NULL`},
