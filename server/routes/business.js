@@ -34,6 +34,23 @@ router.get('/:id', authorize(), function(req, res, next) { //all authorized user
   
 });
 
+/* Delete a Business */
+router.delete('/:id', authorize(Role.Business), function(req, res, next) { //Only the business with :id
+  console.log('This function is not yet implemented in postgres');
+  res.status(404).json({message:"Deletion failed!" });
+  // database.raw(`SELECT * FROM delete_business(${parseInt(req.params.id)})`)
+  // .then(data =>{
+  //   console.log('DEL:', data.rows[0].delete_business);
+  //   if(data.rows === undefined || data.rows.length == 0 || !data.rows[0].delete_business){
+  //     res.status(404).json({message:"Deletion failed!" });
+  //   }else{
+  //     res.status(200).json({message:'Business was successfuly deleted.'}); 
+  //     //Should I also logout?     
+  //   }
+  // }).catch(error =>{console.log(error);  next(new Error('Deletion failed!'));});
+
+});
+
 
 /* CREATE(signup) a new Business*/
 router.post('/', function(req, res, next) { 
@@ -103,9 +120,10 @@ router.put('/:id',authorize(Role.Business), function(req, res, next) { //Only th
 
 /* GET all Batches of a specific business. */
 router.get('/:id/Batches', authorize(), function(req, res, next) {  //all authorized users
-    database.raw(`SELECT * FROM get_business_batches(${parseInt(req.params.id)})`).then(data =>{
+    database.raw(`SELECT * FROM get_business_batches(${parseInt(req.params.id)})`)
+    .then(data =>{
         if(data.rows === undefined || data.rows.length == 0){
-            res.status(404).json({message:"Business does not have any Coupon batches!", batches:[]});        
+            res.status(404).json({message:"No Coupon batches!", batches:[]});        
         }else{
             res.status(200).json({batches:data.rows});       
         }      
@@ -122,7 +140,14 @@ router.get('/:id/Templates/:template_id/Batches', authorize(Role.Business),  fun
 
 /* GET a batch. even inactive ones or expired */
 router.get('/:id/Batches/:batch_id', authorize([Role.Business, Role.Admin]), function(req, res, next) {  //Only the business with :id or an admin
-
+  database.raw(`SELECT * FROM get_business_batch(${parseInt(req.params.id)},${parseInt(req.params.batch_id)})`)
+  .then(data =>{
+    if(data.rows === undefined || data.rows.length == 0){
+        res.status(404).json({message:"Batch not found!", batch:{}});        
+    }else{
+        res.status(200).json({batch:data.rows});       
+    }      
+  });    
 });
 
 
@@ -158,20 +183,45 @@ router.get('/:id/Templates', authorize(Role.Business),  function(req, res, next)
 
 
 /* CREATE(POST) a new coupon Template*/
-router.post('/:id/Templates', authorize(Role.Admin), function(req, res, next) { //Only the business with :id
-  
-   
+router.post('/:id/Templates', authorize(Role.Business), function(req, res, next) { //Only the business with :id
+  database.raw(`SELECT * FROM insert_template(${parseInt(req.params.id)},
+    '${req.body.description}', 
+    '${req.body.discount_type}', 
+    ${parseInt(req.body.discount)})`) 
+     .then(data =>{
+       if(data.rows === undefined || data.rows.length == 0){
+        res.status(404).json({message:"Template not created!", template:{}});        
+       }else{
+        res.status(200).json({template:data.rows});       
+       }      
+     }).catch(error =>{console.log(error); res.send("ERROR!")});       
 });
 
 /* GET a Template of a specific business. */
 router.get('/:id/Templates/:template_id', authorize(Role.Business),  function(req, res, next) { //Only the business with :id
-   
-
+  database.raw(`SELECT * FROM get_business_template(${parseInt(req.params.id)},${parseInt(req.params.template_id)})`).then(data =>{
+    if(data.rows === undefined || data.rows.length == 0){
+        res.status(404).json({message:"Coupon template not found!", template:{}});        
+    }else{
+        res.status(200).json({template:data.rows});       
+    }      
+  });   
 });
 
 /* Update a Template of a specific business. */
 router.put('/:id/Templates/:template_id', authorize(Role.Business),  function(req, res, next) { //Only the business with :id
-   
+  database.raw(`SELECT * FROM update_template(${parseInt(req.params.id)},
+  ${parseInt(req.params.template_id)},
+  '${req.body.description}', 
+  '${req.body.discount_type}', 
+  ${parseInt(req.body.discount)})`) 
+   .then(data =>{
+     if(data.rows === undefined || data.rows.length == 0){
+      res.status(400).json({message:"Template not created!", template:{}});        
+     }else{
+      res.status(200).json({template:data.rows});       
+     }      
+   }).catch(error =>{console.log(error); res.send("ERROR!")});  
 
 });
 
