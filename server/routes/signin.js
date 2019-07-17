@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 
 /* Login route - User can either be a business or a customer, so the route is the same regardless */
 router.post('/', async (req, res, next) => {
-  if(validUser(req.body)){
+  if(validUser(req.body)){    
     //Check if user exists
     getRole(req.body.email)
     .then(user =>{

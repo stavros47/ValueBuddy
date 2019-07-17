@@ -154,17 +154,19 @@ router.get('/:id/Templates', authorize(Role.Business),  function(req, res, next)
 
 });
 
-/* GET a Template of a specific business. */
-router.get('/:id/Templates/:template_id', authorize(Role.Business),  function(req, res, next) { //Only the business with :id
-   
 
-});
 
 
 /* CREATE(POST) a new coupon Template*/
 router.post('/:id/Templates', authorize(Role.Admin), function(req, res, next) { //Only the business with :id
   
    
+});
+
+/* GET a Template of a specific business. */
+router.get('/:id/Templates/:template_id', authorize(Role.Business),  function(req, res, next) { //Only the business with :id
+   
+
 });
 
 /* Update a Template of a specific business. */
