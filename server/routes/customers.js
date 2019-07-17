@@ -3,16 +3,16 @@ const router = express.Router();
 const database = require('../database');
 const {validate, validDetails, getByEmail} = require('../helpers/validation');
 const bcrypt = require('bcrypt');
-const  authorize  = require('../helpers/authentication');
+const authorize  = require('../helpers/authentication');
 const Role = require('../helpers/role');
 
 /* GET all Customers. */
 router.get('/', authorize(Role.Admin),  function(req, res, next) { //Only admins
   database.raw('SELECT * FROM get_customers()').then(data =>{
     if(data.rows === undefined || data.rows.length == 0){
-      res.json({message:"Customers not Found!", customers:[]});        
+      res.status(404).json({message:"Customers not Found!", customers:[]});        
     }else{
-      res.json({customers:data.rows});
+      res.status(200).json({customers:data.rows});
     }
   });    
 
@@ -20,36 +20,52 @@ router.get('/', authorize(Role.Admin),  function(req, res, next) { //Only admins
 
 /* GET a Customer */
 router.get('/:id', authorize(), function(req, res, next) { //All authorized users
-    database.raw(`SELECT * FROM get_customer(${parseInt(req.params.id)})`).then(data =>{
-      if(data.rows === undefined || data.rows.length == 0){
-        res.json({message:"Customer not Found!", customer:{}});        
-      }else{
-        res.json({customer:data.rows});       
-      }      
-    });    
+  database.raw(`SELECT * FROM get_customer(${parseInt(req.params.id)})`).then(data =>{
+    if(data.rows === undefined || data.rows.length == 0){
+      res.status(404).json({message:"Customer not Found!", customer:{}});        
+    }else{
+      res.status(200).json({customer:data.rows});       
+    }      
+  });    
   
+});
+
+/* Delete a Customer */
+router.delete('/:id', authorize(Role.Customer), function(req, res, next) {  //Customer with :id
+  database.raw(`SELECT * FROM delete_customer(${parseInt(req.params.id)})`)
+  .then(data =>{
+    console.log('DEL:', data.rows[0].delete_customer);
+    if(data.rows === undefined || data.rows.length == 0 || !data.rows[0].delete_customer){
+      res.status(404).json({message:"Deletion failed!" });
+    }else{
+      res.status(200).json({message:'Customer was successfuly deleted.'}); 
+      //Should I also logout?     
+    }
+  }).catch(error =>{console.log(error);  next(new Error('Deletion failed!'));});
+
 });
 
 /* GET a Customer's Coupons. */
 router.get('/:id/Coupons', authorize([Role.Customer, Role.Admin]), (req, res, next) => { //Customer with :id & admins
     database.raw(`SELECT * FROM get_customers_coupons(${parseInt(req.params.id)})`).then(data =>{
       if(data.rows === undefined || data.rows.length == 0){
-        res.json({message:"Customer did not have any coupons claimed!", coupons:[]});
+        res.status(404).json({message:"Customer did not have any coupons claimed!", coupons:[]});
       }else{
-        res.json({coupons:data.rows});
+        res.status(200).json({coupons:data.rows});
       }
-    });
+    }).catch(error =>{console.log(error);  next(new Error('Error looking for coupons'));});
 });
 
 /* GET a Customer's specific Coupon. */
 router.get('/:id/Coupons/:coupon_id', authorize([Role.Customer, Role.Admin]), (req, res, next) => { //Customer with :id & admins
-  // database.raw(`SELECT * FROM get_customers_coupons(${parseInt(req.params.id)})`).then(data =>{
-  //   if(data.rows === undefined || data.rows.length == 0){
-  //     res.json({message:"Customer did not have any coupons claimed!", coupons:[]});
-  //   }else{
-  //     res.json({coupons:data.rows});
-  //   }
-  // });
+  database.raw(`SELECT * FROM get_customers_coupon(${parseInt(req.params.id)},${parseInt(req.params.coupon_id)})`)
+  .then(data =>{
+    if(data.rows === undefined || data.rows.length == 0){
+      res.status(404).json({message:"Coupon not Found!", coupon:{}});        
+    }else{
+      res.status(200).json({coupon:data.rows});       
+    }     
+  }).catch(error =>{console.log(error);  next(new Error('Error looking for coupon'));});
 });
 
 
