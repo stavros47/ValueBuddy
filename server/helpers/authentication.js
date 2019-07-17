@@ -8,9 +8,9 @@ function authorize(roles = []) {
     return function (req, res, next) {
         const {user_id, role, role_id} = req.session;
             if (!user_id 
-                || (roles.length && !roles.includes(role)) 
-                || ((req.params.id) && (parseInt(req.params.id)) != role_id)) {
-                // user's role is not authorized
+                || (roles.length && !roles.includes(role)) //if there are roles and the user's role is not included
+                || (roles.length && (req.params.id) && (parseInt(req.params.id)) != role_id)) { //if role_id is not the same as the path's id
+                // user or user's role is not authorized:
                 return res.status(401).json({ message: 'Unauthorized' });
             }
 
