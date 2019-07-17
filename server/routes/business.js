@@ -133,10 +133,35 @@ router.get('/:id/Batches', authorize(), function(req, res, next) {  //all author
 
 /* GET all batches made from a specific template, of a specific business. */
 router.get('/:id/Templates/:template_id/Batches', authorize(Role.Business),  function(req, res, next) { //Only the business with :id
-  
-
+  database.raw(`SELECT * FROM get_business_template_batches(${parseInt(req.params.id)},${parseInt(req.params.template_id)})`)
+  .then(data =>{
+    if(data.rows === undefined || data.rows.length == 0){
+        res.status(404).json({message:"No Batches found!", batches:[]});        
+    }else{
+        res.status(200).json({batches:data.rows});       
+    }      
+  });
 });
   
+
+/* CREATE(POST) a new Batch*/
+router.post('/:id/Templates/:template_id/Batches', authorize(Role.Business), function(req, res, next) { //Only the business with :id
+  database.raw(`SELECT * FROM insert_business_template_batch(
+    ${parseInt(req.body.id)},
+    ${parseInt(req.body.template_id)},
+    ${parseInt(req.body.created_count)}, 
+    '${req.body.start_date}', 
+    '${req.body.expiry_date}', 
+    ${parseInt(req.body.status_id)})`) 
+    .then(data =>{
+      if(data.rows === undefined || data.rows.length == 0){
+          res.status(404).json({message:"Batch was not created", batch:{}});        
+      }else{
+          res.status(200).json({batch:data.rows});       
+      }      
+    }).catch(error =>{console.log(error); res.send("ERROR!")});     
+});
+
 
 /* GET a batch. even inactive ones or expired */
 router.get('/:id/Batches/:batch_id', authorize([Role.Business, Role.Admin]), function(req, res, next) {  //Only the business with :id or an admin
@@ -148,13 +173,6 @@ router.get('/:id/Batches/:batch_id', authorize([Role.Business, Role.Admin]), fun
         res.status(200).json({batch:data.rows});       
     }      
   });    
-});
-
-
-/* CREATE(POST) a new Batch*/
-router.post('/:id/Templates/:template_id/Batches', authorize(Role.Business), function(req, res, next) { //Only the business with :id
-   
-  
 });
 
 

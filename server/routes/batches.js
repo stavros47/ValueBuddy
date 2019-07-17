@@ -51,18 +51,18 @@ router.get('/:batch_id/Coupons', authorize(Role.Admin), function(req, res, next)
 
 /* CREATE(POST) a new Batch*/
 router.post('/', authorize(Role.Admin), function(req, res, next) { //All authorized admins
-database.raw(`SELECT * FROM insert_batch(${parseInt(req.body.template_id)},
-    ${parseInt(req.body.created_count)}, 
-    '${req.body.start_date}', 
-    '${req.body.expiry_date}', 
-    ${parseInt(req.body.status_id)})`) 
-        .then(data =>{
-        if(data.rows === undefined || data.rows.length == 0){
-            res.json({message:"Batch was not created", batch:{}});        
-        }else{
-            res.json({batch:data.rows});       
-        }      
-        }).catch(error =>{console.log(error); res.send("ERROR!")});    
+    database.raw(`SELECT * FROM insert_batch(${parseInt(req.body.template_id)},
+        ${parseInt(req.body.created_count)}, 
+        '${req.body.start_date}', 
+        '${req.body.expiry_date}', 
+        ${parseInt(req.body.status_id)})`) 
+            .then(data =>{
+            if(data.rows === undefined || data.rows.length == 0){
+                res.status(404).json({message:"Batch was not created", batch:{}});        
+            }else{
+                res.status(200).json({batch:data.rows});       
+            }      
+            }).catch(error =>{console.log(error); res.send("ERROR!")});    
 
 });
 
