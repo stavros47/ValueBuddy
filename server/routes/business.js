@@ -259,7 +259,14 @@ router.get('/:id/Coupons', authorize(Role.Business), function(req, res, next) { 
 
 /* GET all coupons for a batch */
 router.get('/:id/Batches/:batch_id/Coupons', authorize(Role.Business), function(req, res, next) {  //Only the business with :id
- 
+  database.raw(`SELECT * FROM get_business_batch_coupons(${parseInt(req.params.id)},${parseInt(req.params.batch_id)})`)
+  .then(data =>{
+    if(data.rows === undefined || data.rows.length == 0){
+      res.status(404).json({message:`No coupons found!`, coupons:[]});        
+    }else{
+      res.status(200).json({coupons:data.rows});       
+    }      
+});    
 
 });
 
