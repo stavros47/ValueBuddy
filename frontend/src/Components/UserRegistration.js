@@ -32,7 +32,12 @@ export class UserRegistration extends Component {
                         <p>Sign up now!</p>
                         <div className="login-box2">
                             <p>Already Registered?</p>
-                            <button type="submit" className="btn btn-danger">Sign in</button>
+                            <button type="submit" className="btn btn-danger" onClick={
+                        (e)=>{
+                            this.props.history.push("/");
+                            e.preventDefault();
+                        }
+                    }>Sign in</button>
                         </div>
                     </div>                
                     <div className="register col-md-8">
@@ -41,7 +46,7 @@ export class UserRegistration extends Component {
                             <br/>
                             <div className="form-row">
                                 <div className="form-group col-md-6">                        
-                                    <input type="text" className="form-control" id="inputUsername" placeholder="Username" autofocus/>
+                                    <input type="text" className="form-control" id="inputUsername" placeholder="Username" autoFocus/>
                                 </div>
                                 <div className="form-group col-md-6">                        
                                     <input type="text" className="form-control" id="inputEmail" placeholder="Your Email"/>
@@ -84,7 +89,7 @@ export class UserRegistration extends Component {
                             </div> 
                             <div className="form-row">
                                 <div className="form-group col-md-6">    
-                                    <label for="inputDOB">Date of Birth:</label>                    
+                                    <label htmlFor="inputDOB">Date of Birth:</label>                    
                                     <input type="date" className="form-control" id="inputDOB" placeholder="Date"/>
                                 </div>                           
                             </div> 
