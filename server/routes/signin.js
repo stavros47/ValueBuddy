@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const {validUser, getByEmail, getRole} = require('../helpers/validation');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const secret = process.env.JWT_SECRET;
 
 /* Login route - User can either be a business or a customer, so the route is the same regardless */
 router.post('/', async (req, res, next) => {
@@ -15,10 +17,20 @@ router.post('/', async (req, res, next) => {
         bcrypt.compare(req.body.password, user.password)
         .then(result =>{
           if(result){            
-            req.session.user_id = user.user_id;
-            req.session.role = user.role;
-            req.session.role_id = user.role_id;
-            res.status(200).json({message:'Login Success!'});
+            const token = jwt.sign({
+              sub: user.user_id, 
+              role: user.role, 
+              role_id: user.role_id
+            }, secret, {
+              expiresIn: "1h"
+            });   
+          
+
+            res.status(200).json(
+              {
+                message:'Login Success!',
+                token            
+            });
           }else{
             console.log('Wrong password');
             res.status(400).json('Authentication failed');
