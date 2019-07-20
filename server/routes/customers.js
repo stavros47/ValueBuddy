@@ -24,7 +24,7 @@ router.get('/:id', authorize(), function(req, res, next) { //All authorized user
     if(data.rows === undefined || data.rows.length == 0){
       res.status(404).json({message:"Customer not Found!", customer:{}});        
     }else{
-      res.status(200).json({customer:data.rows});       
+      res.status(200).json({customer:data.rows[0]});       
     }      
   });    
   
