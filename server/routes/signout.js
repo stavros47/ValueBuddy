@@ -1,8 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const database = require('../database');
-const {validUser, getByEmail} = require('../helpers/validation');
-const bcrypt = require('bcrypt');
 
 /* Login route - User can either be a business or a customer, so the route is the same regardless */
 router.post('/', function(req, res, next) {
