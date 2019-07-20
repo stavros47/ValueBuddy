@@ -2,13 +2,16 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:3001",
   "dependencies": {
     "axios": "^0.19.0",
+    "jwt-decode": "^2.2.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
-    "react-scripts": "3.0.1"
+    "react-scripts": "3.0.1",
+    "yup": "^0.27.0"
   },
   "scripts": {
     "start": "react-scripts start",
