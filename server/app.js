@@ -1,46 +1,35 @@
-
 const createError = require('http-errors');
-const path = require('path');
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
-const dotenv = require('dotenv').config();
-const session = require('express-session');
+//This loads the .env file to add the required enviroment files.
+require('dotenv').config();
 
 /* Include the express framework and invoke it*/
 const express = require('express');
 const app = express();
 
+// const whitelist = ['http://localhost:3000', 'http://localhost:3001']
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true)
+//     } else {
+//       callback(new Error('Not allowed by CORS'))
+//     }
+//   }
+// }
+//app.use(cors(corsOptions));
+
 /*Middleware*/
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cookieParser());
-app.use(cors());
 
-const ONE_HOUR = 1000 * 60 * 60
-
-const {
-  SESS_NAME = 'ssid',
-  SESS_SECRET = 'ssh1quiet,it\'asecret!',
-  NODE_ENV = 'development',
-  SESS_LIFETIME = ONE_HOUR
-} = process.env
-
-const IN_PROD = NODE_ENV === 'production';
-
-app.use(session({
-  name: SESS_NAME,
-  resave: false,
-  saveUninitialized: false,
-  secret: SESS_SECRET,
-  cookie:{
-    maxAge: SESS_LIFETIME,
-    sameSite: true,
-    secure: IN_PROD
-  }
-}));
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 var indexRouter = require('./routes');
 app.use('/', indexRouter);
