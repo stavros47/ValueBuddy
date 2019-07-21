@@ -7,8 +7,7 @@ const Auth = new AuthHelperMethods("http://localhost:3001");
 // export const PrivateRoute = ({ component: Component, roles, ...rest }) => (
 export const PrivateRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={props => {
-        //const currentUser = Auth.getConfirm();
-       
+               
         if (!Auth.loggedIn()) {
             // not logged in so redirect to login page with the return url
             return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
@@ -21,6 +20,6 @@ export const PrivateRoute = ({ component: Component, ...rest }) => (
         // }
 
         // authorised so return component
-        return <Component {...props} />
+        return <Component {...rest} {...props}/>
     }} />
 )
