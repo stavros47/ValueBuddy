@@ -10,14 +10,18 @@ export default class AuthHelperMethods {
     }
     login = (email, password) => {
       // Get a token from api server using the fetch api
-      
-      return this.fetch(`http://localhost:3001/signin`, {email:email , password: password})
-      .then(res => { 
-        console.log('res',res)       
+      return this.fetch({
+        method: 'post',
+        url: 'http://localhost:3001/signin',
+        data: {
+          email,
+          password
+        }
+      }).then(res => { 
+        console.log('response:',res)       
         this.setToken(res.token); // Setting the token in localStorage
         return Promise.resolve(res);
       });
-
     };
   
     loggedIn = () => {
@@ -55,12 +59,12 @@ export default class AuthHelperMethods {
       localStorage.removeItem("id_token");
     };
   
-    getConfirm = () => {
+    getTokenData = () => {
       // Using jwt-decode npm package to decode the token
       try{       
-        let answer = decode(this.getToken());
-        console.log("Recieved answer!");
-        return answer;
+        let tokenData = decode(this.getToken());
+        console.log("Token decoded.");
+        return tokenData;
       }catch (err) {
         console.log("Error line 69 AuthHelperMethods.js");
         return;
@@ -68,7 +72,7 @@ export default class AuthHelperMethods {
      
     };
   
-    fetch = (url, options) => {
+    fetch = (options) => {
       // performs api calls sending the required authentication headers
       const headers = {
         Accept: "application/json",
@@ -79,11 +83,8 @@ export default class AuthHelperMethods {
       if (this.loggedIn()) {
         headers["Authorization"] = "Bearer " + this.getToken();
       }
-  
-      return axios.post(url, {
-        ...options,
-        headers        
-      })
+      options.headers = headers;
+      return axios(options)
         .then(this._checkStatus)
         .then(res => res.data);
         
