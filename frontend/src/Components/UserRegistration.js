@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import BasicAppBar from './BasicAppBar';
 
 export class UserRegistration extends Component {
     constructor(props){
@@ -22,6 +23,8 @@ export class UserRegistration extends Component {
 
     render() {
         return (
+            <>
+            <BasicAppBar/>
             <div className="container register-box">
                 <div className="row">
                     <div className="welcome bg-primary col-md-4">
@@ -101,6 +104,7 @@ export class UserRegistration extends Component {
                     </div>
                     </div> 
         </div>
+        </>
         )
     }
 }
