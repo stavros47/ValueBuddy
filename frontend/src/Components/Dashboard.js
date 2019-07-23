@@ -31,6 +31,7 @@ const useStyles = makeStyles(theme => ({
   },
   drawerPaper: {
     width: drawerWidth,
+    boxShadow: '0 3px 5px 2px rgb(128,128,128, 0.4)'
   },
   content: {
     flexGrow: 8,
