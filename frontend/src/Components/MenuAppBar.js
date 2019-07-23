@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -46,9 +47,13 @@ export default function MenuAppBar(props) {
     <div className={classes.root}>
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
+          
           <Typography variant="h5" className={classes.title} noWrap>
+          <RouterLink to='/' className='logo_appbar'>
             ValueBuddy
+            </RouterLink>
           </Typography>
+          
           <span id = "empty-span"></span>
             <div>
             <Typography variant="h6" className={classes.test}>
