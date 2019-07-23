@@ -1,15 +1,14 @@
 import React, {useState, useEffect} from 'react';
-import AuthHelperMethods from './AuthHelperMethods';
+import {Grid, Typography} from '@material-ui/core';
 
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import AuthHelperMethods from './AuthHelperMethods';
+import TemplateItem from './TemplateItem';
 
 const Auth = new AuthHelperMethods("http://localhost:3001"); 
 
 export default function Templates(props) {
     const [templates,setTemplates] = useState([])
-
+   
     useEffect(()=>{        
         
             Auth.fetch({
@@ -30,15 +29,19 @@ export default function Templates(props) {
 
     return (
         <div>
-            <h1>Templates</h1>
-            <List>
-            {templates.map((template) => (       
-                <ListItem key={template.template_id}>                   
-                    <ListItemText primary={template.description} />
-                </ListItem>                
+        <Typography className="section_title" variant="h4">
+            Coupon Templates
+        </Typography>           
+             <Grid
+              container
+              direction="row"
+              justify="flex-start"
+              alignItems="flex-start"
+             >
+              {templates.map((template) => (
+                <TemplateItem key={template.template_id} template={template}/>              
             ))}
-            </List>
-            
+            </Grid>
         </div>      
     );
 }
