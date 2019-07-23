@@ -51,6 +51,45 @@ code {
   text-align: center;
 }
 
+.logo_appbar{
+  text-decoration: none;
+  color: white;  
+}
+
+.logo_appbar:hover{
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  color: transparent;
+  -webkit-text-stroke: 2px white;
+}
+
+.template_card{
+  max-width: 345;
+  margin:10px 10%;
+}
+
+.card_content {
+  margin-top:0px;
+  padding:3px 25px;
+}
+
+.batch_card{
+  max-width: 345;
+  margin:10px 10%;
+}
+
+.status_active{
+  color: green;
+}
+
+.status_inactive {
+  color: red;
+}
+
+.section_title{
+  text-align: center;
+}
+
 .register{
   padding:45px;
   margin-bottom: 20px;
