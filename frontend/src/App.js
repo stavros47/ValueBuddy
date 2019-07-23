@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Switch} from 'react-router-dom';
 import Dashboard from './Components/Dashboard';
 import UserRegistration from './Components/UserRegistration';
 import {PrivateRoute} from './Components/PrivateRoute';//Higher order component
-import BasicAppBar from './Components/BasicAppBar';
 import Login from './Components/Login';
 
 import AuthHelperMethods from './Components/AuthHelperMethods';
@@ -38,10 +37,6 @@ class App extends React.Component {
     return (
       <BrowserRouter>
       <Switch>
-        <div className="App">
-          {!this.state.isAuthed &&
-            <BasicAppBar/>
-          }
           <PrivateRoute exact path ='/' 
             component={Dashboard}
             user={this.state.currentUser}
@@ -55,8 +50,8 @@ class App extends React.Component {
             user={this.state.currentUser}
             handleLogout={this.handleLogout}
             isAuthed={this.state.isAuthed}            
-          />          
-        </div>        
+          />         
+        
         </Switch>    
       </BrowserRouter>
     );
