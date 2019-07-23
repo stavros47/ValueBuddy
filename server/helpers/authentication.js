@@ -48,16 +48,20 @@ function authorize(roles = []) {
       }),
     
     function (req, res, next) {
-        const {sub, role, role_id} = req.user;
-            if (!sub 
-                || (roles.length && !roles.includes(role)) //if there are roles and the user's role is not included
-                || (roles.length && (req.params.id) && (parseInt(req.params.id)) != role_id)) { //if role_id is not the same as the path's id
-                // user or user's role is not authorized:
-                return res.status(401).json({ message: 'Unauthorized!' });
-            }
+        if(req.user){
+          const {sub, role, role_id} = req.user;
+          if (!sub 
+              || (roles.length && !roles.includes(role)) //if there are roles and the user's role is not included
+              || (roles.length && (req.params.id) && (parseInt(req.params.id)) != role_id)) { //if role_id is not the same as the path's id
+              // user or user's role is not authorized:
+              return res.status(401).json({ message: 'Unauthorized!' });
+          }
+        }else{
+          return res.status(401).json({ message: 'Unauthorized!' });
+        }       
 
-            // authentication and authorization successful
-            next();
+        // authentication and authorization successful
+        next();
         }
     ];
 }

@@ -1,6 +1,7 @@
 const createError = require('http-errors');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 //This loads the .env file to add the required enviroment files.
 require('dotenv').config();
 
@@ -18,7 +19,7 @@ const app = express();
 //     }
 //   }
 // }
-//app.use(cors(corsOptions));
+app.use(cors());
 
 /*Middleware*/
 app.use(logger('dev'));

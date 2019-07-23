@@ -28,7 +28,7 @@ router.get('/:id', authorize(), function(req, res, next) { //all authorized user
         if(data.rows === undefined || data.rows.length == 0){
             res.status(404).json({message:"Business not Found!", business:{}});        
         }else{
-            res.status(200).json({business:data.rows});       
+            res.status(200).json({business:data.rows[0]});       
         }      
     });    
   
@@ -202,6 +202,7 @@ router.get('/:id/Templates', authorize(Role.Business),  function(req, res, next)
 
 /* CREATE(POST) a new coupon Template*/
 router.post('/:id/Templates', authorize(Role.Business), function(req, res, next) { //Only the business with :id
+  console.log(req.body.description, req.body.discount_type, req.body.discount);
   database.raw(`SELECT * FROM insert_template(${parseInt(req.params.id)},
     '${req.body.description}', 
     '${req.body.discount_type}', 
