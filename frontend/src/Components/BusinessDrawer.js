@@ -15,11 +15,11 @@ const drawerItems = [
     path:'/',
   },
   {
-    name:'Templates',
+    name:'Coupon Templates',
     path:'/Templates',
   },
   {
-    name:'Batches',
+    name:'Coupon Batches',
     path:'/Batches',
   },
   {
