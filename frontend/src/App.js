@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route} from 'react-router-dom';
+import { BrowserRouter, Route, Switch} from 'react-router-dom';
 import Dashboard from './Components/Dashboard';
 import UserRegistration from './Components/UserRegistration';
 import {PrivateRoute} from './Components/PrivateRoute';//Higher order component
@@ -36,7 +36,8 @@ class App extends React.Component {
   render() {
 
     return (
-      <BrowserRouter>    
+      <BrowserRouter>
+      <Switch>
         <div className="App">
           {!this.state.isAuthed &&
             <BasicAppBar/>
@@ -49,7 +50,14 @@ class App extends React.Component {
           />
           <Route exact path='/login' render={(props) => <Login {...props} handleLogin={this.handleLogin}/>}/>
           <Route exact path='/signup' component={UserRegistration}/>
-        </div>
+          <PrivateRoute exact path ='*' 
+            component={Dashboard}
+            user={this.state.currentUser}
+            handleLogout={this.handleLogout}
+            isAuthed={this.state.isAuthed}            
+          />          
+        </div>        
+        </Switch>    
       </BrowserRouter>
     );
   }
