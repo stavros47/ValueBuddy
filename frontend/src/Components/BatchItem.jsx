@@ -76,29 +76,29 @@ export default function BatchItem(props) {
             }
             title={batch.description}
             subheader={`Starts: ${batch.start_date} - Expires: ${batch.expiry_date}`}
-            />
+            className="card-header"/>
             {/* <CardContent className="card_content"> */}
-            <Grid container direction="row" justify="flex-start" alignItems="flex-start" className="card_content">
-                <Grid item xs={12} sm={12} md={12} zeroMinWidth>
-                    <Typography variant="subtitle1" gutterBottom >
-                        Status: <span className={batch.status === 'Active' ? 'status_active' : 'status_inactive'}> {batch.status}</span>
+            <Grid container direction="row" justify="space-between" alignItems="center" className="card_content" spacing={0}>
+                <Grid item xs={6} sm={4} md={3} zeroMinWidth >
+                    <Typography variant="subtitle1"  align="center" >
+                        Status: <span style={{display:'block'}} className={batch.status === 'Active' ? 'status_active' : 'status_inactive'}> {batch.status}</span>
                     </Typography>
                 </Grid>
-            {/* </Grid>
+            {/* </Grid> 
             <Grid container direction="row" justify="flex-start" alignItems="flex-start"> */}
-                <Grid item xs={6} sm={4} md={3} zeroMinWidth>
-                    <Typography variant="subtitle1" gutterBottom>
-                        Category: <span>{batch.business_type}</span>
+                <Grid item xs={6} sm={4} md={3} zeroMinWidth >
+                    <Typography variant="subtitle1" align="center">
+                        Category: <span style={{display:'block'}}>{batch.business_type}</span>
                     </Typography>
                 </Grid>
-                <Grid item xs={6} sm={4} md={3} zeroMinWidth>
-                    <Typography variant="subtitle1" gutterBottom>
-                        Company: <span>{batch.business_name}</span>
+                <Grid item xs={6} sm={4} md={3} zeroMinWidth >
+                    <Typography variant="subtitle1" align="center">
+                        Company: <span style={{display:'block'}}>{batch.business_name}</span>
                     </Typography>
                 </Grid>
-                <Grid item xs={6} sm={4} md={3} zeroMinWidth>
-                    <Typography variant="subtitle1" gutterBottom>
-                        Available: <span>{availableCoupons(batch.created_count,batch.claimed_count)}</span>
+                <Grid item xs={6} sm={4} md={3} zeroMinWidth >
+                    <Typography variant="subtitle1" align="center">
+                        Available: <span style={{display:'block'}}>{availableCoupons(batch.created_count,batch.claimed_count)}</span>
                     </Typography>
                 </Grid>
              </Grid>                
