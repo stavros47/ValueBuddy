@@ -51,6 +51,32 @@ code {
   text-align: center;
 }
 
+.coupon {
+  border-left: 10px solid #34eb83;
+  width:70%;
+ 
+}
+
+.card-header{
+  padding-bottom:3px;
+  background-color: white;
+}
+
+.info{
+  padding:5px;
+}
+
+.more-icon {
+  display: block;
+  float:right;
+  padding: 0;
+  margin:0;
+}
+
+.batch-text {
+ 
+}
+
 .logo_appbar{
   text-decoration: none;
   color: white;  
