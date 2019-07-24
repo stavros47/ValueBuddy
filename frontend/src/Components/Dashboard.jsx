@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import {PrivateRoute} from './PrivateRoute'
 import Batches from './Batches';
 import Templates from './Templates';
+import BusinessCoupons from './BusinessCoupons';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -125,6 +126,11 @@ function Dashboard(props) {
           />
             <PrivateRoute exact path ='/Batches' 
             component={Batches}
+            resourcePath={resourcePath}
+            currentUser={currentUser}           
+          />
+              <PrivateRoute exact path ='/Coupons' 
+            component={BusinessCoupons}
             resourcePath={resourcePath}
             currentUser={currentUser}           
           />
