@@ -14,7 +14,7 @@ import DeleteForever from '@material-ui/icons/DeleteForever';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Edit from '@material-ui/icons/Edit';
 import EditTemplateDialog from './EditTemplateDialog';
-import DeleteTemplateDialog from './DeleteTemplateDialog';
+import DeleteDialog from './DeleteDialog';
 
 /*Setup the Menu that pops up when clicking the more icon on a template*/
 const StyledMenu = withStyles({
@@ -51,8 +51,8 @@ const StyledMenuItem = withStyles(theme => ({
 /*The actual Template Item*/
 export default function TemplateItem(props) {    
     const [anchorEl, setAnchorEl] = useState(null);
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const {template} = props;
 
     /*Edit Dialog */
@@ -125,7 +125,10 @@ export default function TemplateItem(props) {
             </StyledMenu>                        
         </Card>
         <EditTemplateDialog open={isDialogOpen} handleCloseEdit={handleCloseEdit} template={template}/>
-        <DeleteTemplateDialog open={deleteDialogOpen} handleCloseDeleteDialog={handleCloseDeleteDialog} template={template}/>
+        <DeleteDialog 
+        open={deleteDialogOpen} 
+        handleCloseDeleteDialog={handleCloseDeleteDialog} 
+        item={{id:template.template_id, name:"Template"}}/>
     </Grid>
     );
 
