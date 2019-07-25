@@ -13,6 +13,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import DeleteForever from '@material-ui/icons/DeleteForever';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Edit from '@material-ui/icons/Edit';
+import DeleteDialog from './DeleteDialog';
 
 const availableCoupons = (created, claimed) => {
     return created - claimed;
@@ -53,7 +54,20 @@ const StyledMenuItem = withStyles(theme => ({
 /*The actual Batch Item*/
 export default function BatchItem(props) {    
     const [anchorEl, setAnchorEl] = useState(null);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
     const {batch} = props;
+
+    /*Delete Dialog */
+    function handleOpenDeleteDialog(){
+      setDeleteDialogOpen(true);
+    }
+    
+    function handleCloseDeleteDialog(){
+      setDeleteDialogOpen(false);
+    }
+
+
 
     function handleClick(event) {
       setAnchorEl(event.currentTarget);
@@ -116,7 +130,10 @@ export default function BatchItem(props) {
                     </ListItemIcon>
                     <ListItemText primary="Edit"/>
                 </StyledMenuItem>
-                <StyledMenuItem>
+                <StyledMenuItem onClick={()=>{
+                  handleOpenDeleteDialog();
+                  handleClose();
+                }}>
                     <ListItemIcon>
                         <DeleteForever color='secondary'/>
                     </ListItemIcon>
@@ -124,6 +141,10 @@ export default function BatchItem(props) {
                 </StyledMenuItem>
             </StyledMenu>                        
         </Card>
+        <DeleteDialog 
+        open={deleteDialogOpen} 
+        handleCloseDeleteDialog={handleCloseDeleteDialog} 
+        item={{id:batch.batch_id, name:"Batch"}}/>
     </Grid>
     );
 
