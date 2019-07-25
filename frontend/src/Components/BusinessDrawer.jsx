@@ -29,7 +29,7 @@ const drawerItems = [
   
 ]
 
-export default function CustomerDrawer(props) {
+export default function BusinessDrawer(props) {
     
     return (        
         <List>
