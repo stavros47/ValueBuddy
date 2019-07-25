@@ -12,15 +12,15 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="left" timeout={{enter:15000, exit:4000}} ref={ref} {...props} />;
 });
 
-export default function DeleteTemplateDialog(props) {
- 
+export default function DeleteDialog(props) {
+
   return (
     <div>      
       <Dialog open={props.open} onClose={props.handleCloseDeleteDialog} TransitionComponent={Transition} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Delete Template</DialogTitle>
+        <DialogTitle id="form-dialog-title">Delete {props.item.name}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            You are about to <strong>delete</strong> Template ID: {props.template.template_id}. Are you sure?            
+            You are about to <strong>delete</strong> {props.item.name}: {props.item.id} . Are you sure?            
           </DialogContentText>           
         </DialogContent>
         <DialogActions>
