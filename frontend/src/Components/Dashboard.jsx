@@ -5,7 +5,7 @@ import {PrivateRoute} from './PrivateRoute'
 import Batches from './Batches';
 import Templates from './Templates';
 import BusinessCoupons from './BusinessCoupons';
-
+import CustomerCoupons from './CustomerCoupons';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -98,7 +98,7 @@ function Dashboard(props) {
             console.log(e);
         });
        
-    }, []);
+    }, [props.user, resourcePath, role]);
  
     return (
         <BrowserRouter>
@@ -119,6 +119,18 @@ function Dashboard(props) {
         </Drawer>
         <main className={classes.content}>             
           <div className={classes.toolbar} />
+          {role === 'customer' &&
+              <>
+               <PrivateRoute exact path ='/Coupons' 
+               component={CustomerCoupons}
+               resourcePath={resourcePath}
+               currentUser={currentUser}           
+              />
+              </>
+          } 
+
+          {role === 'business' &&
+          <>   
           <PrivateRoute exact path ='/Templates' 
             component={Templates}
             resourcePath={resourcePath}
@@ -134,6 +146,8 @@ function Dashboard(props) {
             resourcePath={resourcePath}
             currentUser={currentUser}           
           />
+          </>
+        }
         </main>
        
       </div>
