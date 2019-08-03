@@ -193,7 +193,7 @@ router.get('/:id/Templates', authorize(Role.Business),  function(req, res, next)
         }else{
             res.status(200).json({templates:data.rows});       
         }      
-    });    
+    }).catch(error =>{console.log(error); res.send("ERROR!")});   
 
 });
 
