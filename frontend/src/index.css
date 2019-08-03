@@ -90,9 +90,11 @@ code {
 }
 
 .template_card{
-  max-width: 345;
-  margin:10px 10%;
+  /* max-width: 345; */
+  /* margin:10px 10%; */
+  margin: 15px 0;
 }
+
 
 .card_content {
   margin-top:0px;
@@ -100,8 +102,10 @@ code {
 }
 
 .batch_card{
-  max-width: 345;
-  margin:10px 10%;
+  /* max-width: 345;
+  margin:10px 10%; */
+  margin: 15px 0;
+ 
 }
 
 .status_active{
@@ -112,8 +116,15 @@ code {
   color: red;
 }
 
+.templates-header{
+  max-width: 345;
+  margin:10px 10%;
+}
+
 .section_title{
   text-align: center;
+  display: block;
+  float: left;
 }
 
 .register{
