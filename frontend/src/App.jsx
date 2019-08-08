@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Dashboard from "./Components/Dashboard";
 import UserRegistration from "./Components/UserRegistration";
 import { PrivateRoute } from "./Components/PrivateRoute"; //Higher order component
-import Login from "./Components/Login";
+import UserLogin from "./Components/UserLogin";
 
 import AuthHelperMethods from "./Components/AuthHelperMethods";
 const Auth = new AuthHelperMethods("http://localhost:3001");
@@ -51,7 +51,7 @@ class App extends React.Component {
             exact
             path="/login"
             render={props => (
-              <Login {...props} handleLogin={this.handleLogin} />
+              <UserLogin {...props} handleLogin={this.handleLogin} />
             )}
           />
           <Route exact path="/signup" component={UserRegistration} />
