@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { Grid, Typography, Fab } from "@material-ui/core";
+import { Grid, Typography, Fab, Hidden } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -99,19 +99,37 @@ export default function Batches(props) {
         justify="space-between"
         alignItems="flex-start"
       >
-        <Typography className="section_title" variant="h4">
-          Coupon Batches
-        </Typography>
-        <Fab
-          onClick={handleClickOpen}
-          color="primary"
-          variant="extended"
-          aria-label="create"
-          className={classes.fab}
-        >
-          <AddIcon className={classes.extendedIcon} />
-          Create
-        </Fab>
+        <Grid container item xs={12} sm={12} md={12}>
+          <Grid item xs={9} md={7}>
+            <Typography className="section_title" variant="h4">
+              Coupon Batches
+            </Typography>
+          </Grid>
+          <Grid item xs={3} md={5}>
+            <Hidden smDown>
+              <Fab
+                onClick={handleClickOpen}
+                color="primary"
+                variant="extended"
+                aria-label="create"
+                className={classes.fab}
+              >
+                <AddIcon className={classes.extendedIcon} />
+                Create
+              </Fab>
+            </Hidden>
+            <Hidden mdUp>
+              <Fab
+                onClick={handleClickOpen}
+                color="primary"
+                aria-label="create"
+                className={classes.fab}
+              >
+                <AddIcon />
+              </Fab>
+            </Hidden>
+          </Grid>
+        </Grid>
         {batches.map(batch => (
           <BatchItem key={batch.batch_id} batch={batch} />
         ))}

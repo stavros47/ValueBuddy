@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Grid, Typography, Fab } from "@material-ui/core";
+import { Grid, Typography, Fab, Hidden } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -57,23 +57,41 @@ export default function Templates(props) {
       <Grid
         container
         direction="row"
-        justify="space-between"
+        justify="center"
         alignItems="flex-start"
+        spacing={4}
       >
-        <Typography className="section_title" variant="h4">
-          Coupon Templates
-        </Typography>
-        <Fab
-          onClick={handleClickOpen}
-          color="primary"
-          variant="extended"
-          aria-label="create"
-          className={classes.fab}
-        >
-          <AddIcon className={classes.extendedIcon} />
-          Create
-        </Fab>
-
+        <Grid container item xs={12} sm={12} md={12}>
+          <Grid item xs={9} md={7}>
+            <Typography className="section_title" variant="h4">
+              Coupon Templates
+            </Typography>
+          </Grid>
+          <Grid item xs={3} md={5}>
+            <Hidden smDown>
+              <Fab
+                onClick={handleClickOpen}
+                color="primary"
+                variant="extended"
+                aria-label="create"
+                className={classes.fab}
+              >
+                <AddIcon className={classes.extendedIcon} />
+                Create
+              </Fab>
+            </Hidden>
+            <Hidden mdUp>
+              <Fab
+                onClick={handleClickOpen}
+                color="primary"
+                aria-label="create"
+                className={classes.fab}
+              >
+                <AddIcon />
+              </Fab>
+            </Hidden>
+          </Grid>
+        </Grid>
         {props.templates.map((template, index) => (
           <TemplateItem
             key={template.template_id || index}
