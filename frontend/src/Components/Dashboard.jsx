@@ -8,12 +8,12 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 //Components
 import MenuAppBar from "./MenuAppBar";
-import CustomerDrawer from "./CustomerDrawer";
-import BusinessDrawer from "./BusinessDrawer";
+import DrawerItems from "./DrawerItems";
 import { PrivateRoute } from "./PrivateRoute";
 import Batches from "./Batches";
 import Templates from "./Templates";
 import Coupons from "./Coupons";
+import Profile from "./Profile";
 
 import AuthHelperMethods from "./AuthHelperMethods";
 
@@ -118,21 +118,23 @@ function Dashboard(props) {
   }, [props.user, resourcePath, role]);
 
   useEffect(() => {
-    Auth.fetch({
-      method: "get",
-      url: `http://localhost:3001/${resourcePath}/Templates`,
-      data: {}
-    })
-      .then(res => {
-        console.log("templates:", res.templates);
-        if (res.templates) {
-          setTemplates(res.templates);
-        }
+    if (role === "business") {
+      Auth.fetch({
+        method: "get",
+        url: `http://localhost:3001/${resourcePath}/Templates`,
+        data: {}
       })
-      .catch(e => {
-        console.log(e);
-      });
-  }, [resourcePath]);
+        .then(res => {
+          console.log("templates:", res.templates);
+          if (res.templates) {
+            setTemplates(res.templates);
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    }
+  }, [resourcePath, role]);
 
   const createTemplate = template => {
     Auth.fetch({
@@ -162,7 +164,6 @@ function Dashboard(props) {
         <div className={classes.root}>
           <CssBaseline />
           <MenuAppBar
-            currentUser={currentUser}
             handleLogout={props.handleLogout}
             handleDrawerToggle={handleDrawerToggle}
           />
@@ -175,14 +176,13 @@ function Dashboard(props) {
               paper: classes.drawerPaper
             }}
           >
+            <Profile
+              currentUser={currentUser}
+              handleLogout={props.handleLogout}
+            />
             <div className={classes.toolbar} />
-            {role === "customer" && (
-              <CustomerDrawer handleDrawerToggle={handleDrawerToggle} />
-            )}
-            {role === "business" && (
-              <BusinessDrawer handleDrawerToggle={handleDrawerToggle} />
-            )}
             <Divider />
+            <DrawerItems handleDrawerToggle={handleDrawerToggle} role={role} />
           </Drawer>
           <main className={classes.content}>
             <div className={classes.toolbar} />
