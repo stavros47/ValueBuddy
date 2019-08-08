@@ -10,8 +10,6 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 
-// const drawerWidth = 240;
-
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1
@@ -29,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   appBar: {
     position: "absolute",
     width: "100%",
-    zIndex: "1400"
+    zIndex: "1200"
     // [theme.breakpoints.up("sm")]: {
     //   width: `calc(100% - ${drawerWidth}px)`
     // }
@@ -70,12 +68,6 @@ export default function MenuAppBar(props) {
 
           <span id="empty-span" />
           <div>
-            <Typography variant="h6" className={classes.test}>
-              Welcome,{" "}
-              {props.currentUser.first_name
-                ? props.currentUser.first_name
-                : props.currentUser.business_name}
-            </Typography>
             <IconButton
               aria-label="Account of current user"
               aria-controls="menu-appbar"
