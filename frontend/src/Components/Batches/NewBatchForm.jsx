@@ -9,7 +9,6 @@ import {
 } from "@material-ui/core";
 
 import { makeStyles } from "@material-ui/core/styles";
-import { DateTimePicker } from "@material-ui/pickers";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -25,6 +24,11 @@ const useStyles = makeStyles(theme => ({
   },
   datePicker: {
     marginTop: "15px"
+  },
+  textField: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: 200
   }
 }));
 
@@ -57,36 +61,36 @@ export default function NewBatchForm(props) {
                 <MenuItem
                   key={template.template_id}
                   name={template.template_id}
-                  value={template.template_id}
+                  value={template.template_id.toString()}
                 >
                   {template.description}
                 </MenuItem>
               );
             })}
           </TextField>
-          <DateTimePicker
-            className={classes.datePicker}
+          <TextField
             name="start_date"
-            autoOk
-            required
-            ampm={false}
             value={props.newBatch.start_date}
             onChange={props.handleInputChange}
             label="Start Date"
-            showTodayButton
-            disablePast
+            type="date"
+            className={classes.textField}
+            InputLabelProps={{
+              shrink: true
+            }}
           />
-          <DateTimePicker
-            className={classes.datePicker}
+          <TextField
             name="expiry_date"
-            autoOk
-            required
-            ampm={false}
             value={props.newBatch.expiry_date}
             onChange={props.handleInputChange}
             label="Expiry Date"
-            disablePast
+            type="date"
+            className={classes.textField}
+            InputLabelProps={{
+              shrink: true
+            }}
           />
+
           <TextField
             required
             margin="dense"
@@ -111,9 +115,9 @@ export default function NewBatchForm(props) {
             <MenuItem selected value={4}>
               Inactive
             </MenuItem>
-            <MenuItem value={1}>Active</MenuItem>
-            <MenuItem value={2}>Expired</MenuItem>
-            <MenuItem value={3}>Disabled</MenuItem>
+            <MenuItem value={"1"}>Active</MenuItem>
+            <MenuItem value={"2"}>Expired</MenuItem>
+            <MenuItem value={"3"}>Disabled</MenuItem>
           </TextField>
         </form>
       </DialogContent>
