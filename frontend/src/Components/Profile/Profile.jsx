@@ -29,7 +29,7 @@ const Profile = props => {
       ? `${props.currentUser.first_name} ${props.currentUser.last_name}`
       : props.currentUser.business_name,
     avatar: "/images/avatars/avatar_01.png",
-    bio: "Brain Director"
+    bio: props.currentUser.role
   };
 
   return (

@@ -3,9 +3,6 @@ import { BrowserRouter } from "react-router-dom";
 //Material-ui components
 import { makeStyles } from "@material-ui/core/styles";
 import { Drawer, CssBaseline, Divider } from "@material-ui/core";
-//Date-Time Pickers
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
 //Components
 import MenuAppBar from "./MenuAppBar";
 import DrawerItems from "./DrawerItems";
@@ -160,75 +157,73 @@ function Dashboard(props) {
 
   return (
     <BrowserRouter>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <div className={classes.root}>
-          <CssBaseline />
-          <MenuAppBar
+      <div className={classes.root}>
+        <CssBaseline />
+        <MenuAppBar
+          handleLogout={props.handleLogout}
+          handleDrawerToggle={handleDrawerToggle}
+        />
+        <Drawer
+          open={drawerOpen}
+          onClose={handleDrawerToggle}
+          variant="temporary"
+          className={classes.drawer}
+          classes={{
+            paper: classes.drawerPaper
+          }}
+        >
+          <Profile
+            currentUser={currentUser}
             handleLogout={props.handleLogout}
-            handleDrawerToggle={handleDrawerToggle}
           />
-          <Drawer
-            open={drawerOpen}
-            onClose={handleDrawerToggle}
-            variant="temporary"
-            className={classes.drawer}
-            classes={{
-              paper: classes.drawerPaper
-            }}
-          >
-            <Profile
-              currentUser={currentUser}
-              handleLogout={props.handleLogout}
-            />
-            <div className={classes.toolbar} />
-            <Divider />
-            <DrawerItems handleDrawerToggle={handleDrawerToggle} role={role} />
-          </Drawer>
-          <main className={classes.content}>
-            <div className={classes.toolbar} />
-            {role === "customer" && (
-              <>
-                <PrivateRoute
-                  exact
-                  path="/Coupons"
-                  component={Coupons}
-                  resourcePath={resourcePath}
-                  currentUser={currentUser}
-                />
-              </>
-            )}
+          <div className={classes.toolbar} />
+          <Divider />
+          <DrawerItems handleDrawerToggle={handleDrawerToggle} role={role} />
+        </Drawer>
+        <main className={classes.content}>
+          <div className={classes.toolbar} />
+          {role === "customer" && (
+            <>
+              <PrivateRoute
+                exact
+                path="/Coupons"
+                component={Coupons}
+                resourcePath={resourcePath}
+                currentUser={currentUser}
+              />
+            </>
+          )}
 
-            {role === "business" && (
-              <>
-                <PrivateRoute
-                  exact
-                  path="/Templates"
-                  component={Templates}
-                  resourcePath={resourcePath}
-                  currentUser={currentUser}
-                  createTemplate={createTemplate}
-                  templates={templates}
-                />
-                <PrivateRoute
-                  exact
-                  path="/Batches"
-                  component={Batches}
-                  resourcePath={resourcePath}
-                  currentUser={currentUser}
-                  templates={templates}
-                />
-                <PrivateRoute
-                  exact
-                  path="/Coupons"
-                  component={Coupons}
-                  resourcePath={resourcePath}
-                  currentUser={currentUser}
-                />
-              </>
-            )}
-          </main>
-        </div>
-      </MuiPickersUtilsProvider>
+          {role === "business" && (
+            <>
+              <PrivateRoute
+                exact
+                path="/Templates"
+                component={Templates}
+                resourcePath={resourcePath}
+                currentUser={currentUser}
+                createTemplate={createTemplate}
+                templates={templates}
+              />
+              <PrivateRoute
+                exact
+                path="/Batches"
+                component={Batches}
+                resourcePath={resourcePath}
+                currentUser={currentUser}
+                templates={templates}
+              />
+              <PrivateRoute
+                exact
+                path="/Coupons"
+                component={Coupons}
+                resourcePath={resourcePath}
+                currentUser={currentUser}
+              />
+            </>
+          )}
+        </main>
+      </div>
     </BrowserRouter>
   );
 }
