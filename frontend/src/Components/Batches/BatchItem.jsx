@@ -1,5 +1,13 @@
 import React, { useState } from "react";
 
+/* 
+  A Date handling library that helps with date formating/parsing
+  - using date_fns parseIso function I can get back a Date object from an iso date string
+  - using date_fns format function I can format the date object to any desired format
+  ex: format(parseISO(newBatch.start_date), "do-MMM-yyyy")
+*/
+import { format, parseISO } from "date-fns";
+
 import {
   Grid,
   Card,
@@ -97,9 +105,10 @@ export default function BatchItem(props) {
             </>
           }
           title={batch.description}
-          subheader={`Starts: ${batch.start_date} - Expires: ${
-            batch.expiry_date
-          }`}
+          subheader={`Starts: ${format(
+            parseISO(batch.start_date),
+            "MMM do yyyy"
+          )} - Expires: ${format(parseISO(batch.expiry_date), "MMM do yyyy")}`}
           className="card-header"
         />
         {/* <CardContent className="card_content"> */}
