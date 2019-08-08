@@ -83,7 +83,7 @@ export default function TemplateItem(props) {
   }
 
   return (
-    <Grid item xs={12} sm={12} md={12} zeroMinWidth>
+    <Grid item xs={12} sm={12} md={6}>
       <Card className="template_card" id={template.template_id}>
         <CardHeader
           action={
@@ -100,7 +100,9 @@ export default function TemplateItem(props) {
             </>
           }
           title={template.description}
-          subheader={`Created at: ${template.created}`}
+          subheader={`Created: ${template.created.split("T")[0]} at: ${
+            template.created.split("T")[1].split(".")[0]
+          }`}
         />
         <StyledMenu
           id="customized-menu"
