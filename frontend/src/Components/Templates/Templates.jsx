@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 import { Grid, Typography, Fab } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import { makeStyles } from "@material-ui/core/styles";
 
-import AuthHelperMethods from "../AuthHelperMethods";
 import TemplateItem from "./TemplateItem";
 import DialogCreateTemplate from "./DialogCreateTemplate";
-
-const Auth = new AuthHelperMethods("http://localhost:3001");
 
 const useStyles = makeStyles(theme => ({
   fab: {
@@ -22,8 +19,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function Templates(props) {
   const classes = useStyles();
-
-  const [templates, setTemplates] = useState([]);
   const [open, setOpen] = React.useState(false);
 
   function handleClickOpen() {
@@ -33,23 +28,6 @@ export default function Templates(props) {
   function handleClose() {
     setOpen(false);
   }
-
-  useEffect(() => {
-    Auth.fetch({
-      method: "get",
-      url: `http://localhost:3001/${props.resourcePath}/Templates`,
-      data: {}
-    })
-      .then(res => {
-        console.log(res.templates);
-        if (res.templates) {
-          setTemplates(res.templates);
-        }
-      })
-      .catch(e => {
-        console.log(e);
-      });
-  }, [props]);
 
   const [newTemplate, setNewTemplate] = useState({
     description: "",
@@ -70,23 +48,8 @@ export default function Templates(props) {
 
   const handleSubmit = event => {
     event.preventDefault();
+    props.createTemplate(newTemplate);
     handleClose();
-
-    Auth.fetch({
-      method: "post",
-      url: `http://localhost:3001/${props.resourcePath}/Templates`,
-      data: { ...newTemplate }
-    })
-      .then(res => {
-        console.log(res);
-        if (res.template) {
-          setTemplates([...templates, res.template[0]]);
-          console.log("templates!!", templates);
-        }
-      })
-      .catch(e => {
-        console.log(e);
-      });
   };
 
   return (
@@ -111,7 +74,7 @@ export default function Templates(props) {
           Create
         </Fab>
 
-        {templates.map((template, index) => (
+        {props.templates.map((template, index) => (
           <TemplateItem
             key={template.template_id || index}
             template={template}
