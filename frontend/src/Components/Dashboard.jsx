@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter } from "react-router-dom";
-
+//Material-ui components
+import { makeStyles } from "@material-ui/core/styles";
+import { Drawer, CssBaseline, Divider } from "@material-ui/core";
+//Date-Time Pickers
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
+//Components
+import MenuAppBar from "./MenuAppBar";
+import CustomerDrawer from "./CustomerDrawer";
+import BusinessDrawer from "./BusinessDrawer";
 import { PrivateRoute } from "./PrivateRoute";
 import Batches from "./Batches";
 import Templates from "./Templates";
 import Coupons from "./Coupons";
-import { makeStyles } from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Divider from "@material-ui/core/Divider";
-import MenuAppBar from "./MenuAppBar";
-import CustomerDrawer from "./CustomerDrawer";
-import BusinessDrawer from "./BusinessDrawer";
+
 import AuthHelperMethods from "./AuthHelperMethods";
 
 const Auth = new AuthHelperMethods("http://localhost:3001");
@@ -22,16 +25,32 @@ const useStyles = makeStyles(theme => ({
   root: {
     display: "flex"
   },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1
-  },
   drawer: {
     width: drawerWidth,
     flexShrink: 0
   },
+  // drawer: {
+  //   [theme.breakpoints.up("sm")]: {
+  //     width: drawerWidth,
+  //     flexShrink: 0
+  //   }
+  // },
+  appBar: {
+    marginLeft: drawerWidth,
+    [theme.breakpoints.up("sm")]: {
+      width: `calc(100% - ${drawerWidth}px)`
+    }
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+    [theme.breakpoints.up("sm")]: {
+      display: "none"
+    }
+  },
   drawerPaper: {
     width: drawerWidth,
-    boxShadow: "0 3px 5px 2px rgb(128,128,128, 0.4)"
+    boxShadow: "0 3px 5px 2px rgb(128,128,128, 0.4)",
+    flexShrink: 0
   },
   content: {
     flexGrow: 8,
@@ -42,8 +61,11 @@ const useStyles = makeStyles(theme => ({
 
 function Dashboard(props) {
   const classes = useStyles();
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [resourcePath, setResourcePath] = useState("");
   const [currentUser, setCurrentUser] = useState({});
+  const [templates, setTemplates] = useState([]);
+
   const { role, role_id } = props.user;
 
   if (!resourcePath) {
@@ -64,15 +86,13 @@ function Dashboard(props) {
   }
 
   useEffect(() => {
-    //setPath();
-
     Auth.fetch({
       method: "get",
       url: `http://localhost:3001/${resourcePath}`,
       data: {}
     })
       .then(res => {
-        console.log(res);
+        console.log("user:", res);
         if (res) {
           if (role === "admin") {
             setCurrentUser({
@@ -97,67 +117,118 @@ function Dashboard(props) {
       });
   }, [props.user, resourcePath, role]);
 
+  useEffect(() => {
+    Auth.fetch({
+      method: "get",
+      url: `http://localhost:3001/${resourcePath}/Templates`,
+      data: {}
+    })
+      .then(res => {
+        console.log("templates:", res.templates);
+        if (res.templates) {
+          setTemplates(res.templates);
+        }
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }, [resourcePath]);
+
+  const createTemplate = template => {
+    Auth.fetch({
+      method: "post",
+      url: `http://localhost:3001/${resourcePath}/Templates`,
+      data: { ...template }
+    })
+      .then(res => {
+        console.log(res);
+        if (res.template) {
+          setTemplates([...templates, res.template[0]]);
+          console.log("+templates:", templates);
+        }
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  };
+
+  const handleDrawerToggle = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
   return (
     <BrowserRouter>
-      <div className={classes.root}>
-        <CssBaseline />
-        <MenuAppBar
-          currentUser={currentUser}
-          handleLogout={props.handleLogout}
-        />
-        <Drawer
-          className={classes.drawer}
-          variant="permanent"
-          classes={{
-            paper: classes.drawerPaper
-          }}
-        >
-          <div className={classes.toolbar} />
-          {role === "customer" && <CustomerDrawer />}
-          {role === "business" && <BusinessDrawer />}
-          <Divider />
-        </Drawer>
-        <main className={classes.content}>
-          <div className={classes.toolbar} />
-          {role === "customer" && (
-            <>
-              <PrivateRoute
-                exact
-                path="/Coupons"
-                component={Coupons}
-                resourcePath={resourcePath}
-                currentUser={currentUser}
-              />
-            </>
-          )}
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <div className={classes.root}>
+          <CssBaseline />
+          <MenuAppBar
+            currentUser={currentUser}
+            handleLogout={props.handleLogout}
+            handleDrawerToggle={handleDrawerToggle}
+          />
+          <Drawer
+            open={drawerOpen}
+            onClose={handleDrawerToggle}
+            variant="temporary"
+            className={classes.drawer}
+            classes={{
+              paper: classes.drawerPaper
+            }}
+          >
+            <div className={classes.toolbar} />
+            {role === "customer" && (
+              <CustomerDrawer handleDrawerToggle={handleDrawerToggle} />
+            )}
+            {role === "business" && (
+              <BusinessDrawer handleDrawerToggle={handleDrawerToggle} />
+            )}
+            <Divider />
+          </Drawer>
+          <main className={classes.content}>
+            <div className={classes.toolbar} />
+            {role === "customer" && (
+              <>
+                <PrivateRoute
+                  exact
+                  path="/Coupons"
+                  component={Coupons}
+                  resourcePath={resourcePath}
+                  currentUser={currentUser}
+                />
+              </>
+            )}
 
-          {role === "business" && (
-            <>
-              <PrivateRoute
-                exact
-                path="/Templates"
-                component={Templates}
-                resourcePath={resourcePath}
-                currentUser={currentUser}
-              />
-              <PrivateRoute
-                exact
-                path="/Batches"
-                component={Batches}
-                resourcePath={resourcePath}
-                currentUser={currentUser}
-              />
-              <PrivateRoute
-                exact
-                path="/Coupons"
-                component={Coupons}
-                resourcePath={resourcePath}
-                currentUser={currentUser}
-              />
-            </>
-          )}
-        </main>
-      </div>
+            {role === "business" && (
+              <>
+                <PrivateRoute
+                  exact
+                  path="/Templates"
+                  component={Templates}
+                  resourcePath={resourcePath}
+                  currentUser={currentUser}
+                  createTemplate={createTemplate}
+                  templates={templates}
+                />
+                <PrivateRoute
+                  exact
+                  path="/Batches"
+                  component={Batches}
+                  resourcePath={resourcePath}
+                  currentUser={currentUser}
+                  templates={templates}
+                />
+                <PrivateRoute
+                  exact
+                  path="/Coupons"
+                  component={Coupons}
+                  resourcePath={resourcePath}
+                  currentUser={currentUser}
+                />
+              </>
+            )}
+          </main>
+        </div>
+      </MuiPickersUtilsProvider>
     </BrowserRouter>
   );
 }
