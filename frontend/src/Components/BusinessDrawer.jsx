@@ -29,10 +29,10 @@ const drawerItems = [
 
 export default function BusinessDrawer(props) {
   return (
-    <List>
+    <List style={{ paddingTop: "15px" }}>
       {drawerItems.map((drawerItem, index) => (
         <RouterLink to={drawerItem.path} key={drawerItem.path}>
-          <ListItem button>
+          <ListItem button onClick={props.handleDrawerToggle}>
             <ListItemIcon>
               {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
             </ListItemIcon>

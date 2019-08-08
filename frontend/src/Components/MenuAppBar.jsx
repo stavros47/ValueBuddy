@@ -5,10 +5,12 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
-//import MenuIcon from '@material-ui/icons/Menu';
+import MenuIcon from "@material-ui/icons/Menu";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
+
+// const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -25,13 +27,19 @@ const useStyles = makeStyles(theme => ({
     paddingTop: 8
   },
   appBar: {
-    zIndex: theme.zIndex.drawer + 1
+    position: "absolute",
+    width: "100%",
+    zIndex: "1400"
+    // [theme.breakpoints.up("sm")]: {
+    //   width: `calc(100% - ${drawerWidth}px)`
+    // }
   }
 }));
 
 export default function MenuAppBar(props) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
+
   function handleMenu(event) {
     setAnchorEl(event.currentTarget);
     //setAnchorEl(true);
@@ -45,6 +53,15 @@ export default function MenuAppBar(props) {
     <div className={classes.root}>
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
+          <IconButton
+            edge="start"
+            className={classes.menuButton}
+            color="inherit"
+            aria-label="menu"
+            onClick={props.handleDrawerToggle}
+          >
+            <MenuIcon />
+          </IconButton>
           <Typography variant="h5" className={classes.title} noWrap>
             <RouterLink to="/" className="logo_appbar">
               ValueBuddy
