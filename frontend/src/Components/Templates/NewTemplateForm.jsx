@@ -17,10 +17,13 @@ const useStyles = makeStyles(theme => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120
+  },
+  dialog: {
+    minWidth: "80vh"
   }
 }));
 
-export default function DialogCreateTemplate(props) {
+export default function NewTemplateForm(props) {
   //Material UI needs these to style and open the select form control.
   const classes = useStyles();
 
@@ -28,7 +31,9 @@ export default function DialogCreateTemplate(props) {
     <div>
       <DialogTitle id="form-dialog-title">New Template</DialogTitle>
       <DialogContent>
-        <DialogContentText>Create a new Coupon Template.</DialogContentText>
+        <DialogContentText className={classes.dialog}>
+          Create a new Coupon Template.
+        </DialogContentText>
         <form className={classes.root} autoComplete="off">
           <TextField
             required

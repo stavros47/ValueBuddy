@@ -1,16 +1,7 @@
 import React from "react";
 
 import { Button, Dialog, DialogActions, Slide } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-
 import NewTemplateForm from "./NewTemplateForm";
-
-const useStyles = makeStyles(theme => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120
-  }
-}));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return (
