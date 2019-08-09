@@ -60,7 +60,7 @@ export default function Batches(props) {
   const handleSubmit = event => {
     event.preventDefault();
     handleClose();
-
+    Auth.fetch({
       method: "post",
       url: `http://localhost:3001/${props.resourcePath}/Templates/${
         newBatch.template_id
