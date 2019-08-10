@@ -125,6 +125,7 @@ function Dashboard(props) {
           console.log("templates:", res.templates);
           if (res.templates) {
             setTemplates(res.templates);
+            // setIsLoading(false);
           }
         })
         .catch(e => {
@@ -132,6 +133,14 @@ function Dashboard(props) {
         });
     }
   }, [resourcePath, role]);
+
+  const getTemplates = async () => {
+    return Auth.fetch({
+      method: "get",
+      url: `http://localhost:3001/${resourcePath}/Templates`,
+      data: {}
+    });
+  };
 
   const createTemplate = template => {
     Auth.fetch({
@@ -149,6 +158,30 @@ function Dashboard(props) {
       .catch(e => {
         console.log(e);
       });
+  };
+
+  const updateTemplate = async updatedTemplate => {
+    console.log("tosend:", updatedTemplate);
+    try {
+      let updated = await Auth.fetch({
+        method: "put",
+        url: `http://localhost:3001/${resourcePath}/Templates/${
+          updatedTemplate.template_id
+        }`,
+        data: { ...updatedTemplate }
+      });
+
+      if (updated.template[0].update_template) {
+        getTemplates().then(res => {
+          console.log("templates:", res.templates);
+          if (res.templates) {
+            setTemplates(res.templates);
+          }
+        });
+      }
+    } catch (err) {
+      console.log(err, "Error updating template.");
+    }
   };
 
   const handleDrawerToggle = () => {
@@ -203,6 +236,7 @@ function Dashboard(props) {
                 resourcePath={resourcePath}
                 currentUser={currentUser}
                 createTemplate={createTemplate}
+                updateTemplate={updateTemplate}
                 templates={templates}
               />
               <PrivateRoute
