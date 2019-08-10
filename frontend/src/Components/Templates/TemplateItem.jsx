@@ -51,17 +51,42 @@ const StyledMenuItem = withStyles(theme => ({
 /*The actual Template Item*/
 export default function TemplateItem(props) {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
   const { template } = props;
+  const [updatedTemplate, setUpdatedTemplate] = useState(template);
+
+  const handleInputChange = event => {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+
+    setUpdatedTemplate({
+      ...updatedTemplate,
+      [name]: value
+    });
+  };
+
+  const handleUpdateSubmit = event => {
+    event.preventDefault();
+    props.updateTemplate(updatedTemplate);
+    handleCloseDialog();
+  };
+
+  const handleCancel = () => {
+    setUpdatedTemplate(template);
+    handleCloseDialog();
+  };
 
   /*Edit Dialog */
-  function handleOpenEdit() {
-    setIsDialogOpen(true);
+  const [open, setOpen] = React.useState(false);
+
+  function handleClickOpen() {
+    setOpen(true);
   }
 
-  function handleCloseEdit() {
-    setIsDialogOpen(false);
+  function handleCloseDialog() {
+    setOpen(false);
   }
 
   /*Delete Dialog */
@@ -112,7 +137,7 @@ export default function TemplateItem(props) {
         >
           <StyledMenuItem
             onClick={() => {
-              handleOpenEdit();
+              handleClickOpen();
               handleClose();
             }}
           >
@@ -135,9 +160,11 @@ export default function TemplateItem(props) {
         </StyledMenu>
       </Card>
       <EditTemplateDialog
-        open={isDialogOpen}
-        handleCloseEdit={handleCloseEdit}
-        template={template}
+        open={open}
+        handleCancel={handleCancel}
+        handleInputChange={handleInputChange}
+        handleUpdateSubmit={handleUpdateSubmit}
+        template={updatedTemplate}
       />
       <DeleteDialog
         open={deleteDialogOpen}
