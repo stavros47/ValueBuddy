@@ -25,7 +25,7 @@ export default function Templates(props) {
     setOpen(true);
   }
 
-  function handleClose() {
+  function handleCloseDialog() {
     setOpen(false);
   }
 
@@ -49,7 +49,7 @@ export default function Templates(props) {
   const handleSubmit = event => {
     event.preventDefault();
     props.createTemplate(newTemplate);
-    handleClose();
+    handleCloseDialog();
   };
 
   return (
@@ -96,11 +96,12 @@ export default function Templates(props) {
           <TemplateItem
             key={template.template_id || index}
             template={template}
+            updateTemplate={props.updateTemplate}
           />
         ))}
         <DialogCreateTemplate
           open={open}
-          handleClose={handleClose}
+          handleCloseDialog={handleCloseDialog}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
           newTemplate={newTemplate}
