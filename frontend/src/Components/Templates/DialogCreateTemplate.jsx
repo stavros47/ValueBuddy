@@ -19,18 +19,16 @@ export default function DialogCreateTemplate(props) {
     <div>
       <Dialog
         open={props.open}
-        onClose={props.handleClose}
+        onClose={props.handleCloseDialog}
         TransitionComponent={Transition}
         aria-labelledby="form-dialog-title"
       >
         <NewTemplateForm
-          handleInputChange={props.handleInputChange}
-          handleSubmit={props.handleSubmit}
           newTemplate={props.newTemplate}
+          handleInputChange={props.handleInputChange}
         />
-
         <DialogActions>
-          <Button onClick={props.handleClose} color="primary">
+          <Button onClick={props.handleCloseDialog} color="primary">
             Cancel
           </Button>
           <Button color="primary" type="submit" onClick={props.handleSubmit}>
