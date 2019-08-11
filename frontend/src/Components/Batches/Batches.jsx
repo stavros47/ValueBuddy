@@ -36,7 +36,9 @@ export default function Batches(props) {
     setOpen(false);
     resetState();
   }
-
+  /*
+   - Dates need to be in a certain format to be acceptable by input type="date"
+  */
   const getInitialState = () => {
     return {
       template_id: "",
@@ -47,9 +49,6 @@ export default function Batches(props) {
     };
   };
 
-  /*
-   - Dates need to be in a certain format to be acceptable by input type="date"
-  */
   const [newBatch, setNewBatch] = useState(getInitialState);
 
   const handleInputChange = event => {

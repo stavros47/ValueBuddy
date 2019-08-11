@@ -20,16 +20,19 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(1),
     minWidth: 120
   },
-  dialog: {
-    minWidth: "80vh"
-  },
-  datePicker: {
-    marginTop: "15px"
-  },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    width: 200
+    width: 100
+  },
+  datepick: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: 150
+  },
+  descr: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1)
   }
 }));
 
@@ -42,16 +45,14 @@ export default function NewBatchForm(props) {
     <div>
       <DialogTitle id="form-dialog-title">New Batch</DialogTitle>
       <DialogContent>
-        <DialogContentText className={classes.test}>
-          Create a new Coupon Batch.
-        </DialogContentText>
-        <form className={classes.dialog} autoComplete="off">
+        <DialogContentText>Create a new Coupon Batch.</DialogContentText>
+        <form className={classes.root} autoComplete="off">
           <Grid
             container
             direction="row"
-            justify="center"
+            justify="flex-start"
             alignItems="flex-start"
-            spacing={4}
+            spacing={2}
           >
             <Grid item xs={12} sm={12} md={12}>
               <TextField
@@ -62,6 +63,7 @@ export default function NewBatchForm(props) {
                 name="template_id"
                 value={props.newBatch.template_id}
                 onChange={props.handleInputChange}
+                className={classes.descr}
                 id="template_id"
                 label="Template"
               >
@@ -78,57 +80,78 @@ export default function NewBatchForm(props) {
                 })}
               </TextField>
             </Grid>
-            <TextField
-              name="start_date"
-              value={props.newBatch.start_date}
-              onChange={props.handleInputChange}
-              label="Start Date"
-              type="date"
-              className={classes.textField}
-              InputLabelProps={{
-                shrink: true
-              }}
-            />
-            <TextField
-              name="expiry_date"
-              value={props.newBatch.expiry_date}
-              onChange={props.handleInputChange}
-              label="Expiry Date"
-              type="date"
-              className={classes.textField}
-              InputLabelProps={{
-                shrink: true
-              }}
-            />
-
-            <TextField
-              required
-              margin="dense"
-              name="created_count"
-              value={props.newBatch.created_count}
-              onChange={props.handleInputChange}
-              id="created_count"
-              label="Count"
-              type="text"
-            />
-            <TextField
-              select
-              required
-              style={{ width: "100px" }}
-              margin="dense"
-              name="status_id"
-              value={props.newBatch.status_id}
-              onChange={props.handleInputChange}
-              id="status_id"
-              label="Status"
+            <Grid
+              container
+              justify="flex-start"
+              alignItems="flex-start"
+              spacing={1}
+              item
+              xs={12}
+              sm={12}
+              md={12}
             >
-              <MenuItem selected value={4}>
-                Inactive
-              </MenuItem>
-              <MenuItem value={"1"}>Active</MenuItem>
-              <MenuItem value={"2"}>Expired</MenuItem>
-              <MenuItem value={"3"}>Disabled</MenuItem>
-            </TextField>
+              <Grid item xs={12} sm={12} md={6}>
+                <TextField
+                  name="start_date"
+                  value={props.newBatch.start_date}
+                  onChange={props.handleInputChange}
+                  label="Start Date"
+                  type="date"
+                  className={classes.datepick}
+                  InputLabelProps={{
+                    shrink: true
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12} md={6}>
+                <TextField
+                  name="expiry_date"
+                  value={props.newBatch.expiry_date}
+                  onChange={props.handleInputChange}
+                  label="Expiry Date"
+                  type="date"
+                  className={classes.datepick}
+                  InputLabelProps={{
+                    shrink: true
+                  }}
+                />
+              </Grid>
+            </Grid>
+            <Grid container item xs={12} sm={12} md={12}>
+              <Grid item xs={12} sm={12} md={6}>
+                <TextField
+                  required
+                  margin="dense"
+                  name="created_count"
+                  value={props.newBatch.created_count}
+                  onChange={props.handleInputChange}
+                  className={classes.textField}
+                  id="created_count"
+                  label="Count"
+                  type="text"
+                />
+              </Grid>
+              <Grid item xs={12} sm={12} md={6}>
+                <TextField
+                  select
+                  required
+                  margin="dense"
+                  name="status_id"
+                  value={props.newBatch.status_id}
+                  onChange={props.handleInputChange}
+                  className={classes.textField}
+                  id="status_id"
+                  label="Status"
+                >
+                  <MenuItem selected value={4}>
+                    Inactive
+                  </MenuItem>
+                  <MenuItem value={"1"}>Active</MenuItem>
+                  <MenuItem value={"2"}>Expired</MenuItem>
+                  <MenuItem value={"3"}>Disabled</MenuItem>
+                </TextField>
+              </Grid>
+            </Grid>
           </Grid>
         </form>
       </DialogContent>
