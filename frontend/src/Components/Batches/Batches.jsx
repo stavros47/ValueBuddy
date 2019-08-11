@@ -34,18 +34,23 @@ export default function Batches(props) {
 
   function handleClose() {
     setOpen(false);
+    resetState();
   }
+
+  const getInitialState = () => {
+    return {
+      template_id: "",
+      created_count: "",
+      start_date: new Date().toISOString().substring(0, 10),
+      expiry_date: new Date().toISOString().substring(0, 10),
+      status_id: ""
+    };
+  };
 
   /*
    - Dates need to be in a certain format to be acceptable by input type="date"
   */
-  const [newBatch, setNewBatch] = useState({
-    template_id: "",
-    created_count: "",
-    start_date: new Date().toISOString().substring(0, 10),
-    expiry_date: new Date().toISOString().substring(0, 10),
-    status_id: ""
-  });
+  const [newBatch, setNewBatch] = useState(getInitialState);
 
   const handleInputChange = event => {
     const target = event.target;
@@ -59,24 +64,25 @@ export default function Batches(props) {
 
   const handleSubmit = event => {
     event.preventDefault();
-    handleClose();
+    setOpen(false);
     Auth.fetch({
       method: "post",
       url: `http://localhost:3001/${props.resourcePath}/Templates/${
         newBatch.template_id
       }/Batches`,
       data: { ...newBatch }
-    })
-      .then(res => {
-        console.log(res);
-        if (res.batch) {
-          setBatches([...batches, res.batch[0]]);
-          console.log("+batches:", batches);
-        }
-      })
-      .catch(e => {
-        console.log(e);
-      });
+    }).then(res => {
+      if (res && res.batch) {
+        console.log("ress", res);
+        setBatches([...batches, res.batch[0]]);
+        console.log("+batches:", batches);
+      }
+    });
+    resetState();
+  };
+
+  const resetState = () => {
+    setNewBatch(getInitialState);
   };
 
   useEffect(() => {
@@ -84,16 +90,12 @@ export default function Batches(props) {
       method: "get",
       url: `http://localhost:3001/${props.resourcePath}/Batches`,
       data: {}
-    })
-      .then(res => {
-        console.log(res.batches);
-        if (res.batches) {
-          setBatches(res.batches);
-        }
-      })
-      .catch(e => {
-        console.log(e);
-      });
+    }).then(res => {
+      console.log(res.batches);
+      if (res.batches) {
+        setBatches(res.batches);
+      }
+    });
   }, [props.resourcePath]);
 
   return (
