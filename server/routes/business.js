@@ -196,7 +196,7 @@ router.post(
       })
       .catch(error => {
         console.log(error);
-        res.send("ERROR!");
+        res.status(400).send("ERROR!");
       });
   }
 );
