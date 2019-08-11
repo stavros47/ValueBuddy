@@ -27,13 +27,18 @@ export default function Templates(props) {
 
   function handleCloseDialog() {
     setOpen(false);
+    resetState();
   }
 
-  const [newTemplate, setNewTemplate] = useState({
-    description: "",
-    discount_type: "",
-    discount: ""
-  });
+  const getInitialState = () => {
+    return {
+      description: "",
+      discount_type: "",
+      discount: ""
+    };
+  };
+
+  const [newTemplate, setNewTemplate] = useState(getInitialState);
 
   const handleInputChange = event => {
     const target = event.target;
@@ -48,8 +53,13 @@ export default function Templates(props) {
 
   const handleSubmit = event => {
     event.preventDefault();
+    setOpen(false);
     props.createTemplate(newTemplate);
-    handleCloseDialog();
+    resetState();
+  };
+
+  const resetState = () => {
+    setNewTemplate(getInitialState);
   };
 
   return (
