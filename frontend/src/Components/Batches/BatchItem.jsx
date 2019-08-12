@@ -12,12 +12,14 @@ import {
   Grid,
   Card,
   CardHeader,
+  CardContent,
   Typography,
   IconButton,
   Menu,
   MenuItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  LinearProgress
 } from "@material-ui/core";
 
 import { withStyles } from "@material-ui/core/styles";
@@ -105,26 +107,11 @@ export default function BatchItem(props) {
             </>
           }
           title={batch.description}
-          subheader={`Starts: ${format(
-            parseISO(batch.start_date),
-            "MMM do yyyy"
-          )} - Expires: ${format(parseISO(batch.expiry_date), "MMM do yyyy")}`}
-          className="card-header"
-        />
-        {/* <CardContent className="card_content"> */}
-        <Grid
-          container
-          direction="row"
-          justify="space-between"
-          alignItems="center"
-          className="card_content"
-          spacing={0}
-        >
-          <Grid item xs={6} sm={4} md={3} zeroMinWidth>
-            <Typography variant="subtitle1" align="center">
+          subheader={
+            <div>
               Status:{" "}
               <span
-                style={{ display: "block" }}
+                style={{ display: "inline-block" }}
                 className={
                   batch.status === "Active"
                     ? "status_active"
@@ -134,32 +121,63 @@ export default function BatchItem(props) {
                 {" "}
                 {batch.status}
               </span>
-            </Typography>
-          </Grid>
-          {/* </Grid> 
+            </div>
+          }
+          className="card-header"
+        />
+        {/* {`Starts: ${format(
+            parseISO(batch.start_date),
+            "MMM do yyyy"
+          )} - Expires: ${format(parseISO(batch.expiry_date), "MMM do yyyy")}`} */}
+        <CardContent className="card_content">
+          <Grid
+            container
+            direction="row"
+            justify="space-between"
+            alignItems="flex-start"
+            className="card_content"
+            spacing={0}
+          >
+            <Grid item xs={6} sm={4} md={3} zeroMinWidth>
+              <Typography variant="subtitle1" align="center">
+                By:{" "}
+                <span style={{ display: "inline-block" }}>
+                  {batch.business_name}
+                </span>
+              </Typography>
+            </Grid>
+            {/* </Grid> 
             <Grid container direction="row" justify="flex-start" alignItems="flex-start"> */}
-          <Grid item xs={6} sm={4} md={3} zeroMinWidth>
-            <Typography variant="subtitle1" align="center">
-              Category:{" "}
-              <span style={{ display: "block" }}>{batch.business_type}</span>
-            </Typography>
+            <Grid item xs={6} sm={4} md={3} zeroMinWidth />
+            <Grid item xs={6} sm={4} md={3} zeroMinWidth>
+              <Typography variant="subtitle1" align="center">
+                Category:{" "}
+                <span style={{ display: "inline-block" }}>
+                  {batch.business_type}
+                </span>
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={4} md={3} zeroMinWidth>
+              <Typography variant="subtitle1" align="center">
+                Available:{" "}
+                <span style={{ display: "inline-block" }}>
+                  {`${availableCoupons(
+                    batch.created_count,
+                    batch.claimed_count
+                  )} / ${batch.created_count}`}
+                </span>
+              </Typography>
+              <LinearProgress
+                value={
+                  (availableCoupons(batch.created_count, batch.claimed_count) *
+                    100) /
+                  batch.created_count
+                }
+                variant="determinate"
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={6} sm={4} md={3} zeroMinWidth>
-            <Typography variant="subtitle1" align="center">
-              Company:{" "}
-              <span style={{ display: "block" }}>{batch.business_name}</span>
-            </Typography>
-          </Grid>
-          <Grid item xs={6} sm={4} md={3} zeroMinWidth>
-            <Typography variant="subtitle1" align="center">
-              Available:{" "}
-              <span style={{ display: "block" }}>
-                {availableCoupons(batch.created_count, batch.claimed_count)}
-              </span>
-            </Typography>
-          </Grid>
-        </Grid>
-        {/* </CardContent> */}
+        </CardContent>
         <StyledMenu
           id="customized-menu"
           anchorEl={anchorEl}
