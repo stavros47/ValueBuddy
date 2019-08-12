@@ -26,7 +26,7 @@ const drawerItems = {
     },
     {
       name: "Discover",
-      href: "/AllCoupons",
+      href: "/Discover",
       icon: <WhatsHot />
     }
   ],
