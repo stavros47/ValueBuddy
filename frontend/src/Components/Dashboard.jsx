@@ -11,6 +11,7 @@ import Batches from "./Batches";
 import Templates from "./Templates";
 import Coupons from "./Coupons";
 import Profile from "./Profile";
+import BrowseCoupons from "./BrowseCoupons";
 
 import AuthHelperMethods from "./AuthHelperMethods";
 
@@ -221,6 +222,14 @@ function Dashboard(props) {
                 exact
                 path="/Coupons"
                 component={Coupons}
+                resourcePath={resourcePath}
+                currentUser={currentUser}
+              />
+
+              <PrivateRoute
+                exact
+                path="/Discover"
+                component={BrowseCoupons}
                 resourcePath={resourcePath}
                 currentUser={currentUser}
               />
