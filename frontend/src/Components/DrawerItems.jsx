@@ -20,14 +20,14 @@ const drawerItems = {
       icon: <DashboardIcon />
     },
     {
-      name: "My Coupons",
-      href: "/Coupons",
-      icon: <AccountBalanceWallet />
-    },
-    {
       name: "Discover",
       href: "/Discover",
       icon: <WhatsHot />
+    },
+    {
+      name: "My Coupons",
+      href: "/Coupons",
+      icon: <AccountBalanceWallet />
     }
   ],
   business: [
