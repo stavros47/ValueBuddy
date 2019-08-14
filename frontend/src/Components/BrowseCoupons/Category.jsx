@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Link as RouterLink } from "react-router-dom";
+import Link from "@material-ui/core/Link";
 import { Grid, Typography, Tooltip, IconButton } from "@material-ui/core";
 import ArrowBack from "@material-ui/icons/ArrowBack";
 import CouponInstance from "./CouponInstance";
@@ -7,7 +9,7 @@ import AuthHelperMethods from "../AuthHelperMethods";
 const Auth = new AuthHelperMethods("http://localhost:3001");
 
 export default function Category(props) {
-  console.log(props);
+  // console.log('Category props: ',props);
   const { match, location } = props;
   const [batches, setBatches] = useState([]);
 
@@ -48,9 +50,16 @@ export default function Category(props) {
 
       {batches.map(batch => {
         return (
-          <Grid item key={batch.batch_id}>
-            <CouponInstance batch={batch} />
-          </Grid>
+          <Link
+            underline="none"
+            component={RouterLink}
+            to={`${match.url}/${batch.batch_id}`}
+            key={batch.batch_id}
+          >
+            <Grid item>
+              <CouponInstance batch={batch} />
+            </Grid>
+          </Link>
         );
       })}
     </Grid>
