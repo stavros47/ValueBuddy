@@ -12,7 +12,7 @@ import Templates from "./Templates";
 import Coupons from "./Coupons";
 import Profile from "./Profile";
 import BrowseCoupons from "./BrowseCoupons";
-
+import Category from "./BrowseCoupons/Category";
 import AuthHelperMethods from "./AuthHelperMethods";
 
 const Auth = new AuthHelperMethods("http://localhost:3001");
@@ -231,6 +231,12 @@ function Dashboard(props) {
                 path="/Discover"
                 component={BrowseCoupons}
                 resourcePath={resourcePath}
+                currentUser={currentUser}
+              />
+              <PrivateRoute
+                exact
+                path="/Discover/:categoryName"
+                component={Category}
                 currentUser={currentUser}
               />
             </>
