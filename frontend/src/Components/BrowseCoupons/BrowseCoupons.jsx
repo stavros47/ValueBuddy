@@ -15,9 +15,9 @@ import LocalCafe from "@material-ui/icons/LocalCafe";
 const useStyles = makeStyles(theme => ({
   paper: {},
   icon: {
-    fontSize: 260,
+    fontSize: 215,
     [theme.breakpoints.down("sm")]: {
-      fontSize: 130
+      fontSize: 100
     }
   }
 }));
@@ -67,12 +67,6 @@ export default function BrowseCoupons(props) {
 
   return (
     <div>
-      <Typography
-        variant="h4"
-        style={{ textAlign: "center", marginBottom: "10px" }}
-      >
-        Discover Coupons!
-      </Typography>
       <Grid
         container
         direction="row"
@@ -80,9 +74,29 @@ export default function BrowseCoupons(props) {
         alignItems="flex-start"
         spacing={2}
       >
+        <Grid
+          container
+          item
+          container
+          direction="column"
+          justify="flex-start"
+          alignItems="flex-start"
+          spacing={1}
+        >
+          <Grid item>
+            <Typography variant="h5" style={{ marginBottom: "10px" }}>
+              Discover Coupons
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Typography color="textSecondary" variant="subtitle1">
+              by Category:
+            </Typography>
+          </Grid>
+        </Grid>
         {categories.map(category => {
           return (
-            <Grid item sm={6} md={4} key={category.id}>
+            <Grid item xs={4} md={2} key={category.id}>
               <Link
                 component={RouterLink}
                 to={{
