@@ -77,7 +77,6 @@ export default function BrowseCoupons(props) {
         <Grid
           container
           item
-          container
           direction="column"
           justify="flex-start"
           alignItems="flex-start"
