@@ -93,6 +93,7 @@ export default class AuthHelperMethods {
         .then(res => res.data)
         .catch(error => {
           console.log(error.message, `(${error.response.statusText})`);
+          console.log("response:", error.response.data);
         })
     );
   };
