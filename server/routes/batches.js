@@ -48,9 +48,9 @@ router.get("/:batch_id", authorize(), function(req, res, next) {
     .raw(`SELECT * FROM get_batch(${parseInt(req.params.batch_id)})`)
     .then(data => {
       if (data.rows === undefined || data.rows.length == 0) {
-        res.json({ message: "Batch not Found!", batch: {} });
+        res.status(404).json({ message: "Batch not Found!", batch: {} });
       } else {
-        res.json({ batch: data.rows });
+        res.status(200).json({ batch: data.rows });
       }
     });
 });
