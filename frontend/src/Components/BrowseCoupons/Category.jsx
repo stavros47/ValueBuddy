@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Typography } from "@material-ui/core";
+import { Grid, Typography, Tooltip, IconButton } from "@material-ui/core";
+import ArrowBack from "@material-ui/icons/ArrowBack";
 import CouponInstance from "./CouponInstance";
 import AuthHelperMethods from "../AuthHelperMethods";
 
@@ -29,7 +30,22 @@ export default function Category(props) {
 
   return (
     <Grid>
-      <Typography variant="h4">{match.params.categoryName}</Typography>
+      <Grid container item>
+        <Grid item>
+          <Tooltip title="Back">
+            <IconButton
+              aria-label="back"
+              onClick={() => props.history.goBack()}
+            >
+              <ArrowBack />
+            </IconButton>
+          </Tooltip>
+        </Grid>
+        <Grid item>
+          <Typography variant="h4">{match.params.categoryName}</Typography>
+        </Grid>
+      </Grid>
+
       {batches.map(batch => {
         return (
           <Grid item key={batch.batch_id}>
