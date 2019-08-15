@@ -23,6 +23,10 @@ package-lock.json
 .env.test.local
 .env.production.local
 
+#preetier config file
+.prettierrc
+
+#logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
