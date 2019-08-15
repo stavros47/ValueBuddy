@@ -1,69 +1,75 @@
-import React from "react";
-import { Link as RouterLink } from "react-router-dom";
-import Link from "@material-ui/core/Link";
+import React from 'react'
+import { Link as RouterLink } from 'react-router-dom'
+import Link from '@material-ui/core/Link'
 
-import { Grid, Typography, Paper } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Grid, Typography, Paper } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
 
-import Restaurant from "@material-ui/icons/Restaurant";
-import LocalMall from "@material-ui/icons/LocalMall";
-import LocalBar from "@material-ui/icons/LocalBar";
-import Memory from "@material-ui/icons/Memory";
-import LocalGroceryStore from "@material-ui/icons/LocalGroceryStore";
-import LocalCafe from "@material-ui/icons/LocalCafe";
+import Restaurant from '@material-ui/icons/Restaurant'
+import LocalMall from '@material-ui/icons/LocalMall'
+import LocalBar from '@material-ui/icons/LocalBar'
+import Memory from '@material-ui/icons/Memory'
+import LocalGroceryStore from '@material-ui/icons/LocalGroceryStore'
+import LocalCafe from '@material-ui/icons/LocalCafe'
 
 const useStyles = makeStyles(theme => ({
   paper: {},
   icon: {
     fontSize: 215,
-    [theme.breakpoints.down("sm")]: {
-      fontSize: 100
-    }
-  }
-}));
+    [theme.breakpoints.down('sm')]: {
+      fontSize: 100,
+    },
+  },
+}))
 
 export default function BrowseCoupons(props) {
-  const classes = useStyles();
+  const classes = useStyles()
 
   const categories = [
     {
-      name: "Food",
-      href: "/Food",
+      name: 'Food',
+      href: '/Food',
       icon: <Restaurant className={classes.icon} />,
-      id: 1
+      id: 1,
+      color: '#fff767',
     },
     {
-      name: "Clothing",
-      href: "/Clothing",
+      name: 'Clothing',
+      href: '/Clothing',
       icon: <LocalMall className={classes.icon} />,
-      id: 2
+      id: 2,
+      color: '#e56dad',
     },
     {
-      name: "Drinks",
-      href: "/Drinks",
+      name: 'Drinks',
+      href: '/Drinks',
       icon: <LocalBar className={classes.icon} />,
-      id: 3
+      id: 3,
+      color: '#78b390',
     },
     {
-      name: "Technology",
-      href: "/Technology",
+      name: 'Technology',
+      href: '/Technology',
       icon: <Memory className={classes.icon} />,
-      id: 4
+      id: 4,
+      color: '#2196f3',
     },
     {
-      name: "Groceries",
-      href: "/Groceries",
+      name: 'Groceries',
+      href: '/Groceries',
       icon: <LocalGroceryStore className={classes.icon} />,
-      id: 5
+      id: 5,
+      color: '#32e57d',
     },
 
     {
-      name: "Coffee",
-      href: "/Coffee",
+      name: 'Coffee',
+      href: '/Coffee',
       icon: <LocalCafe className={classes.icon} />,
-      id: 6
-    }
-  ];
+      id: 6,
+      color: '#e55036',
+    },
+  ]
 
   return (
     <div>
@@ -83,7 +89,7 @@ export default function BrowseCoupons(props) {
           spacing={1}
         >
           <Grid item>
-            <Typography variant="h5" style={{ marginBottom: "10px" }}>
+            <Typography variant="h5" style={{ marginBottom: '10px' }}>
               Discover Coupons
             </Typography>
           </Grid>
@@ -100,20 +106,24 @@ export default function BrowseCoupons(props) {
                 component={RouterLink}
                 to={{
                   pathname: `${props.match.url}${category.href}`,
-                  state: { categoryID: category.id }
+                  state: { categoryID: category.id },
                 }}
               >
-                <Paper elevation={3} className={classes.paper}>
+                <Paper
+                  elevation={3}
+                  className={classes.paper}
+                  style={{ backgroundColor: category.color }}
+                >
                   {category.icon}
-                  <Typography variant="body1" style={{ textAlign: "center" }}>
+                  <Typography variant="body1" style={{ textAlign: 'center' }}>
                     {category.name}
                   </Typography>
                 </Paper>
               </Link>
             </Grid>
-          );
+          )
         })}
       </Grid>
     </div>
-  );
+  )
 }
