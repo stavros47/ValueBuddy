@@ -1,19 +1,19 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const database = require("../database");
+const database = require('../database');
 
-const { validate, validDetails, getByEmail } = require("../helpers/validation");
-const bcrypt = require("bcrypt");
-const authorize = require("../helpers/authentication");
-const Role = require("../helpers/role");
+const { validate, validDetails, getByEmail } = require('../helpers/validation');
+const bcrypt = require('bcrypt');
+const authorize = require('../helpers/authentication');
+const Role = require('../helpers/role');
 
 /* GET all Businesses. */
-router.get("/", authorize(), function(req, res, next) {
+router.get('/', authorize(), function(req, res, next) {
   //all authorized users
-  database.raw("SELECT * FROM get_businesses()").then(data => {
+  database.raw('SELECT * FROM get_businesses()').then(data => {
     if (data.rows === undefined || data.rows.length == 0) {
       res.status(404);
-      res.json({ message: "No businesses were Found!", businesses: [] });
+      res.json({ message: 'No businesses were Found!', businesses: [] });
     } else {
       res.status(200);
       res.json({ businesses: data.rows });
@@ -22,24 +22,22 @@ router.get("/", authorize(), function(req, res, next) {
 });
 
 /* GET a Business */
-router.get("/:id", authorize(), function(req, res, next) {
+router.get('/:id', authorize(), function(req, res, next) {
   //all authorized users
-  database
-    .raw(`SELECT * FROM get_business(${parseInt(req.params.id)})`)
-    .then(data => {
-      if (data.rows === undefined || data.rows.length == 0) {
-        res.status(404).json({ message: "Business not Found!", business: {} });
-      } else {
-        res.status(200).json({ business: data.rows[0] });
-      }
-    });
+  database.raw(`SELECT * FROM get_business(${parseInt(req.params.id)})`).then(data => {
+    if (data.rows === undefined || data.rows.length == 0) {
+      res.status(404).json({ message: 'Business not Found!', business: {} });
+    } else {
+      res.status(200).json({ business: data.rows[0] });
+    }
+  });
 });
 
 /* Delete a Business */
-router.delete("/:id", authorize(Role.Business), function(req, res, next) {
+router.delete('/:id', authorize(Role.Business), function(req, res, next) {
   //Only the business with :id
-  console.log("This function is not yet implemented in postgres");
-  res.status(404).json({ message: "Deletion failed!" });
+  console.log('This function is not yet implemented in postgres');
+  res.status(404).json({ message: 'Deletion failed!' });
   // database.raw(`SELECT * FROM delete_business(${parseInt(req.params.id)})`)
   // .then(data =>{
   //   console.log('DEL:', data.rows[0].delete_business);
@@ -53,7 +51,7 @@ router.delete("/:id", authorize(Role.Business), function(req, res, next) {
 });
 
 /* CREATE(signup) a new Business*/
-router.post("/", function(req, res, next) {
+router.post('/', function(req, res, next) {
   const userDetails = validate(req.body);
   if (userDetails.allValid) {
     getByEmail(req.body.email).then(user => {
@@ -79,30 +77,30 @@ router.post("/", function(req, res, next) {
             .then(data => {
               if (data.rows === undefined || data.rows.length == 0) {
                 //res.json({message:"Business not found", business:{}});
-                res.status(400).json({ message: "Business signup failed!" });
+                res.status(400).json({ message: 'Business signup failed!' });
               } else {
                 res.status(201).json({ business: data.rows });
               }
             })
             .catch(error => {
               console.log(error);
-              res.send("ERROR!");
+              res.send('ERROR!');
             });
         });
       } else {
         //email in use
-        console.log("Signup: Email already in use.");
-        res.status(400).json({ message: "Business signup failed!" });
+        console.log('Signup: Email already in use.');
+        res.status(400).json({ message: 'Business signup failed!' });
       }
     });
   } else {
-    res.json({ message: "Invalid User Info", ...userDetails });
+    res.json({ message: 'Invalid User Info', ...userDetails });
   }
 });
 /* update a business */
 /*cannot change email for now   ${req.body.email ? `'${req.body.email}'` : `NULL`}, */
 // ToDo: Validations and test unique email constraints
-router.put("/:id", authorize(Role.Business), function(req, res, next) {
+router.put('/:id', authorize(Role.Business), function(req, res, next) {
   //Only the business with :id
   database
     .raw(
@@ -116,138 +114,128 @@ router.put("/:id", authorize(Role.Business), function(req, res, next) {
     )`
     )
     .then(data => {
-      if (
-        data.rows === undefined ||
-        data.rows.length == 0 ||
-        data.rows.update_business === false
-      ) {
-        res.json({ message: "Could not update Business" });
+      if (data.rows === undefined || data.rows.length == 0 || data.rows.update_business === false) {
+        res.json({ message: 'Could not update Business' });
       } else {
         res.json({ result: data.rows });
       }
     })
     .catch(error => {
       console.log(error);
-      res.send("ERROR!");
+      res.send('ERROR!');
     });
 });
 
 //BATCHES:
 
 /* GET all Batches of a specific business. */
-router.get("/:id/Batches", authorize(), function(req, res, next) {
+router.get('/:id/Batches', authorize(), function(req, res, next) {
   //all authorized users
-  database
-    .raw(`SELECT * FROM get_business_batches(${parseInt(req.params.id)})`)
-    .then(data => {
-      if (data.rows === undefined || data.rows.length == 0) {
-        res.status(404).json({ message: "No Coupon batches!", batches: [] });
-      } else {
-        res.status(200).json({ batches: data.rows });
-      }
-    });
+  database.raw(`SELECT * FROM get_business_batches(${parseInt(req.params.id)})`).then(data => {
+    if (data.rows === undefined || data.rows.length == 0) {
+      res.status(404).json({ message: 'No Coupon batches!', batches: [] });
+    } else {
+      res.status(200).json({ batches: data.rows });
+    }
+  });
 });
 
 /* GET all batches made from a specific template, of a specific business. */
-router.get(
-  "/:id/Templates/:template_id/Batches",
-  authorize(Role.Business),
-  function(req, res, next) {
-    //Only the business with :id
-    database
-      .raw(
-        `SELECT * FROM get_business_template_batches(${parseInt(
-          req.params.id
-        )},${parseInt(req.params.template_id)})`
-      )
-      .then(data => {
-        if (data.rows === undefined || data.rows.length == 0) {
-          res.status(404).json({ message: "No Batches found!", batches: [] });
-        } else {
-          res.status(200).json({ batches: data.rows });
-        }
-      });
-  }
-);
-
-/* CREATE(POST) a new Batch */
-router.post(
-  "/:id/Templates/:template_id/Batches",
-  authorize(Role.Business),
-  function(req, res, next) {
-    //Only the business with :id
-
-    database
-      .raw(
-        `SELECT * FROM insert_business_template_batch(
-    ${parseInt(req.params.id)},
-    ${parseInt(req.params.template_id)},
-    ${parseInt(req.body.created_count)}, 
-    '${req.body.start_date}', 
-    '${req.body.expiry_date}', 
-    ${parseInt(req.body.status_id)})`
-      )
-      .then(data => {
-        if (data.rows === undefined || data.rows.length == 0) {
-          res.status(404).json({ message: "Batch was not created", batch: {} });
-        } else {
-          res.status(200).json({ batch: data.rows });
-        }
-      })
-      .catch(error => {
-        console.log(error);
-        res.status(400).send("ERROR!");
-      });
-  }
-);
-
-/* GET a batch. even inactive ones or expired */
-router.get(
-  "/:id/Batches/:batch_id",
-  authorize([Role.Business, Role.Admin]),
-  function(req, res, next) {
-    //Only the business with :id or an admin
-    database
-      .raw(
-        `SELECT * FROM get_business_batch(${parseInt(req.params.id)},${parseInt(
-          req.params.batch_id
-        )})`
-      )
-      .then(data => {
-        if (data.rows === undefined || data.rows.length == 0) {
-          res.status(404).json({ message: "Batch not found!", batch: {} });
-        } else {
-          res.status(200).json({ batch: data.rows });
-        }
-      });
-  }
-);
-
-/* Update a batch of a specific business */
-router.put(
-  "/:id/Batches/:batch_id",
-  authorize([Role.Business, Role.Admin]),
-  function(req, res, next) {
-    //Only the business with :id or an admin
-  }
-);
-
-//TEMPLATES:
-
-/* GET all Templates of a specific business. */
-router.get("/:id/Templates", authorize(Role.Business), function(
+router.get('/:id/Templates/:template_id/Batches', authorize(Role.Business), function(
   req,
   res,
   next
 ) {
   //Only the business with :id
   database
+    .raw(
+      `SELECT * FROM get_business_template_batches(${parseInt(req.params.id)},${parseInt(
+        req.params.template_id
+      )})`
+    )
+    .then(data => {
+      if (data.rows === undefined || data.rows.length == 0) {
+        res.status(404).json({ message: 'No Batches found!', batches: [] });
+      } else {
+        res.status(200).json({ batches: data.rows });
+      }
+    });
+});
+
+/* CREATE(POST) a new Batch */
+router.post('/:id/Templates/:template_id/Batches', authorize(Role.Business), function(
+  req,
+  res,
+  next
+) {
+  //Only the business with :id
+
+  database
+    .raw(
+      `SELECT * FROM insert_business_template_batch(
+    ${parseInt(req.params.id)},
+    ${parseInt(req.params.template_id)},
+    ${parseInt(req.body.created_count)}, 
+    '${req.body.start_date}', 
+    '${req.body.expiry_date}', 
+    ${parseInt(req.body.status_id)})`
+    )
+    .then(data => {
+      if (data.rows === undefined || data.rows.length == 0) {
+        res.status(404).json({ message: 'Batch was not created', batch: {} });
+      } else {
+        res.status(200).json({ batch: data.rows });
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      res.status(400).send('ERROR!');
+    });
+});
+
+/* GET a batch. even inactive ones or expired */
+router.get('/:id/Batches/:batch_id', authorize([Role.Business, Role.Admin]), function(
+  req,
+  res,
+  next
+) {
+  //Only the business with :id or an admin
+  database
+    .raw(
+      `SELECT * FROM get_business_batch(${parseInt(req.params.id)},${parseInt(
+        req.params.batch_id
+      )})`
+    )
+    .then(data => {
+      if (data.rows === undefined || data.rows.length == 0) {
+        res.status(404).json({ message: 'Batch not found!', batch: {} });
+      } else {
+        res.status(200).json({ batch: data.rows });
+      }
+    });
+});
+
+/* Update a batch of a specific business */
+router.put('/:id/Batches/:batch_id', authorize([Role.Business, Role.Admin]), function(
+  req,
+  res,
+  next
+) {
+  //Only the business with :id or an admin
+});
+
+//TEMPLATES:
+
+/* GET all Templates of a specific business. */
+router.get('/:id/Templates', authorize(Role.Business), function(req, res, next) {
+  //Only the business with :id
+  database
     .raw(`SELECT * FROM get_business_templates(${parseInt(req.params.id)})`)
     .then(data => {
       if (data.rows === undefined || data.rows.length == 0) {
         res.status(404).json({
-          message: "Business does not have any Coupon templates!",
-          templates: []
+          message: 'Business does not have any Coupon templates!',
+          templates: [],
         });
       } else {
         res.status(200).json({ templates: data.rows });
@@ -255,16 +243,12 @@ router.get("/:id/Templates", authorize(Role.Business), function(
     })
     .catch(error => {
       console.log(error);
-      res.send("ERROR!");
+      res.send('ERROR!');
     });
 });
 
 /* CREATE(POST) a new coupon Template*/
-router.post("/:id/Templates", authorize(Role.Business), function(
-  req,
-  res,
-  next
-) {
+router.post('/:id/Templates', authorize(Role.Business), function(req, res, next) {
   //Only the business with :id
   console.log(req.body.description, req.body.discount_type, req.body.discount);
   database
@@ -276,37 +260,29 @@ router.post("/:id/Templates", authorize(Role.Business), function(
     )
     .then(data => {
       if (data.rows === undefined || data.rows.length == 0) {
-        res
-          .status(404)
-          .json({ message: "Template not created!", template: {} });
+        res.status(404).json({ message: 'Template not created!', template: {} });
       } else {
         res.status(200).json({ template: data.rows });
       }
     })
     .catch(error => {
       console.log(error);
-      res.send("ERROR!");
+      res.send('ERROR!');
     });
 });
 
 /* GET a Template of a specific business. */
-router.get("/:id/Templates/:template_id", authorize(Role.Business), function(
-  req,
-  res,
-  next
-) {
+router.get('/:id/Templates/:template_id', authorize(Role.Business), function(req, res, next) {
   //Only the business with :id
   database
     .raw(
-      `SELECT * FROM get_business_template(${parseInt(
-        req.params.id
-      )},${parseInt(req.params.template_id)})`
+      `SELECT * FROM get_business_template(${parseInt(req.params.id)},${parseInt(
+        req.params.template_id
+      )})`
     )
     .then(data => {
       if (data.rows === undefined || data.rows.length == 0) {
-        res
-          .status(404)
-          .json({ message: "Coupon template not found!", template: {} });
+        res.status(404).json({ message: 'Coupon template not found!', template: {} });
       } else {
         res.status(200).json({ template: data.rows });
       }
@@ -314,11 +290,7 @@ router.get("/:id/Templates/:template_id", authorize(Role.Business), function(
 });
 
 /* Update a Template of a specific business. */
-router.put("/:id/Templates/:template_id", authorize(Role.Business), function(
-  req,
-  res,
-  next
-) {
+router.put('/:id/Templates/:template_id', authorize(Role.Business), function(req, res, next) {
   //Only the business with :id
   database
     .raw(
@@ -330,50 +302,42 @@ router.put("/:id/Templates/:template_id", authorize(Role.Business), function(
     )
     .then(data => {
       if (data.rows === undefined || data.rows.length == 0) {
-        res
-          .status(400)
-          .json({ message: "Template not created!", template: {} });
+        res.status(400).json({ message: 'Template not created!', template: {} });
       } else {
         res.status(200).json({ template: data.rows });
       }
     })
     .catch(error => {
       console.log(error);
-      res.send("ERROR!");
+      res.send('ERROR!');
     });
 });
 
 //Coupons
 
 /* GET all claimed coupons from ALL BATCHES, that belong to a specific business. */
-router.get("/:id/Coupons", authorize(Role.Business), function(req, res, next) {
+router.get('/:id/Coupons', authorize(Role.Business), function(req, res, next) {
   //Only the business with :id
-  database
-    .raw(`SELECT * FROM get_business_coupons(${parseInt(req.params.id)})`)
-    .then(data => {
-      if (data.rows === undefined || data.rows.length == 0) {
-        res.status(404).json({
-          message: `No coupons from business_id:${req.params.id} were claimed.`,
-          coupons: []
-        });
-      } else {
-        res.status(200).json({ coupons: data.rows });
-      }
-    });
+  database.raw(`SELECT * FROM get_business_coupons(${parseInt(req.params.id)})`).then(data => {
+    if (data.rows === undefined || data.rows.length == 0) {
+      res.status(404).json({
+        message: `No coupons from business_id:${req.params.id} were claimed.`,
+        coupons: [],
+      });
+    } else {
+      res.status(200).json({ coupons: data.rows });
+    }
+  });
 });
 
 /* GET all coupons for a batch */
-router.get("/:id/Batches/:batch_id/Coupons", authorize(Role.Business), function(
-  req,
-  res,
-  next
-) {
+router.get('/:id/Batches/:batch_id/Coupons', authorize(Role.Business), function(req, res, next) {
   //Only the business with :id
   database
     .raw(
-      `SELECT * FROM get_business_batch_coupons(${parseInt(
-        req.params.id
-      )},${parseInt(req.params.batch_id)})`
+      `SELECT * FROM get_business_batch_coupons(${parseInt(req.params.id)},${parseInt(
+        req.params.batch_id
+      )})`
     )
     .then(data => {
       if (data.rows === undefined || data.rows.length == 0) {
@@ -384,4 +348,26 @@ router.get("/:id/Batches/:batch_id/Coupons", authorize(Role.Business), function(
     });
 });
 
+router.post('/:id/Batches/:batch_id/Coupons', authorize(), function(req, res, next) {
+  database
+    .raw(
+      `SELECT * FROM claim_from_batch(${parseInt(req.params.id)},${parseInt(
+        req.params.batch_id
+      )},${parseInt(req.user.role_id)})`
+    )
+    .then(data => {
+      if (
+        data.rows === undefined ||
+        data.rows.length == 0 ||
+        data.rows[0].claim_from_batch === -1
+      ) {
+        res.status(404).json({
+          message: `Could not claim a coupon from batch: ${req.params.batch_id}`,
+          isClaimed: false,
+        });
+      } else {
+        res.status(201).json({ isClaimed: true, coupon_id: data.rows[0].claim_from_batch });
+      }
+    });
+});
 module.exports = router;
