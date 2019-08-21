@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const database = require('../database');
+const { businesses, businessByID } = require('../database/queries');
 
 const { validate, validDetails, getByEmail } = require('../helpers/validation');
 const bcrypt = require('bcrypt');
@@ -10,7 +11,7 @@ const Role = require('../helpers/role');
 /* GET all Businesses. */
 router.get('/', authorize(), function(req, res, next) {
   //all authorized users
-  database.raw('SELECT * FROM get_businesses()').then(data => {
+  businesses().then(data => {
     if (data.rows === undefined || data.rows.length == 0) {
       res.status(404);
       res.json({ message: 'No businesses were Found!', businesses: [] });
@@ -24,13 +25,16 @@ router.get('/', authorize(), function(req, res, next) {
 /* GET a Business */
 router.get('/:id', authorize(), function(req, res, next) {
   //all authorized users
-  database.raw(`SELECT * FROM get_business(${parseInt(req.params.id)})`).then(data => {
-    if (data.rows === undefined || data.rows.length == 0) {
-      res.status(404).json({ message: 'Business not Found!', business: {} });
-    } else {
-      res.status(200).json({ business: data.rows[0] });
-    }
-  });
+  // database.raw(`SELECT * FROM get_business(${parseInt(req.params.id)})`)
+  businessByID(parseInt(req.params.id))
+    .then(data => {
+      if (data.rows === undefined || data.rows.length == 0) {
+        res.status(404).json({ message: 'Business not Found!', business: {} });
+      } else {
+        res.status(200).json({ business: data.rows[0] });
+      }
+    })
+    .catch(e => console.log(e));
 });
 
 /* Delete a Business */
