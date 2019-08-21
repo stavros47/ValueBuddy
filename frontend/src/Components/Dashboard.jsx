@@ -1,32 +1,32 @@
-import React, { useState, useEffect } from "react";
-import { BrowserRouter } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 //Material-ui components
-import { makeStyles } from "@material-ui/core/styles";
-import { Drawer, CssBaseline, Divider } from "@material-ui/core";
+import { makeStyles } from '@material-ui/core/styles';
+import { Drawer, CssBaseline, Divider } from '@material-ui/core';
 //Components
-import MenuAppBar from "./MenuAppBar";
-import DrawerItems from "./DrawerItems";
-import { PrivateRoute } from "./PrivateRoute";
-import Batches from "./Batches";
-import Templates from "./Templates";
-import Coupons from "./Coupons";
-import Profile from "./Profile";
-import BrowseCoupons from "./BrowseCoupons";
-import Category from "./BrowseCoupons/Category";
-import CouponPage from "./Coupons/CouponPage";
-import AuthHelperMethods from "./AuthHelperMethods";
+import MenuAppBar from './MenuAppBar';
+import DrawerItems from './DrawerItems';
+import { PrivateRoute } from './PrivateRoute';
+import Batches from './Batches';
+import Templates from './Templates';
+import Coupons from './Coupons';
+import Profile from './Profile';
+import BrowseCoupons from './BrowseCoupons';
+import Category from './BrowseCoupons/Category';
+import CouponPage from './Coupons/CouponPage';
+import AuthHelperMethods from './AuthHelperMethods';
 
-const Auth = new AuthHelperMethods("http://localhost:3001");
+const Auth = new AuthHelperMethods('http://localhost:3001');
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
   root: {
-    display: "flex"
+    display: 'flex',
   },
   drawer: {
     width: drawerWidth,
-    flexShrink: 0
+    flexShrink: 0,
   },
   // drawer: {
   //   [theme.breakpoints.up("sm")]: {
@@ -36,32 +36,32 @@ const useStyles = makeStyles(theme => ({
   // },
   appBar: {
     marginLeft: drawerWidth,
-    [theme.breakpoints.up("sm")]: {
-      width: `calc(100% - ${drawerWidth}px)`
-    }
+    [theme.breakpoints.up('sm')]: {
+      width: `calc(100% - ${drawerWidth}px)`,
+    },
   },
   menuButton: {
     marginRight: theme.spacing(2),
-    [theme.breakpoints.up("sm")]: {
-      display: "none"
-    }
+    [theme.breakpoints.up('sm')]: {
+      display: 'none',
+    },
   },
   drawerPaper: {
     width: drawerWidth,
-    boxShadow: "0 3px 5px 2px rgb(128,128,128, 0.4)",
-    flexShrink: 0
+    boxShadow: '0 3px 5px 2px rgb(128,128,128, 0.4)',
+    flexShrink: 0,
   },
   content: {
     flexGrow: 8,
-    padding: theme.spacing(3)
+    padding: theme.spacing(3),
   },
-  toolbar: theme.mixins.toolbar
+  toolbar: theme.mixins.toolbar,
 }));
 
 function Dashboard(props) {
   const classes = useStyles();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [resourcePath, setResourcePath] = useState("");
+  const [resourcePath, setResourcePath] = useState('');
   const [currentUser, setCurrentUser] = useState({});
   const [templates, setTemplates] = useState([]);
 
@@ -69,44 +69,44 @@ function Dashboard(props) {
 
   if (!resourcePath) {
     switch (role) {
-      case "customer":
+      case 'customer':
         setResourcePath(`Customers/${role_id}`);
         break;
-      case "business":
+      case 'business':
         setResourcePath(`Business/${role_id}`);
         break;
-      case "admin":
+      case 'admin':
         setResourcePath(`Admin/${role_id}`);
         break;
       default:
-        console.log("Invalid Role");
+        console.log('Invalid Role');
         break;
     }
   }
 
   useEffect(() => {
     Auth.fetch({
-      method: "get",
+      method: 'get',
       url: `http://localhost:3001/${resourcePath}`,
-      data: {}
+      data: {},
     })
       .then(res => {
-        console.log("user:", res);
+        console.log('user:', res);
         if (res) {
-          if (role === "admin") {
+          if (role === 'admin') {
             setCurrentUser({
               ...res.admin,
-              ...props.user
+              ...props.user,
             });
-          } else if (role === "customer") {
+          } else if (role === 'customer') {
             setCurrentUser({
               ...res.customer,
-              ...props.user
+              ...props.user,
             });
-          } else if (role === "business") {
+          } else if (role === 'business') {
             setCurrentUser({
               ...res.business,
-              ...props.user
+              ...props.user,
             });
           }
         }
@@ -117,17 +117,16 @@ function Dashboard(props) {
   }, [props.user, resourcePath, role]);
 
   useEffect(() => {
-    if (role === "business") {
+    if (role === 'business') {
       Auth.fetch({
-        method: "get",
+        method: 'get',
         url: `http://localhost:3001/${resourcePath}/Templates`,
-        data: {}
+        data: {},
       })
         .then(res => {
-          console.log("templates:", res.templates);
+          console.log('templates:', res.templates);
           if (res.templates) {
             setTemplates(res.templates);
-            // setIsLoading(false);
           }
         })
         .catch(e => {
@@ -136,25 +135,25 @@ function Dashboard(props) {
     }
   }, [resourcePath, role]);
 
-  const getTemplates = async () => {
+  const getTemplates = () => {
     return Auth.fetch({
-      method: "get",
+      method: 'get',
       url: `http://localhost:3001/${resourcePath}/Templates`,
-      data: {}
+      data: {},
     });
   };
 
   const createTemplate = template => {
     Auth.fetch({
-      method: "post",
+      method: 'post',
       url: `http://localhost:3001/${resourcePath}/Templates`,
-      data: { ...template }
+      data: { ...template },
     })
       .then(res => {
         console.log(res);
         if (res.template) {
           setTemplates([...templates, res.template[0]]);
-          console.log("+templates:", templates);
+          console.log('+templates:', templates);
         }
       })
       .catch(e => {
@@ -163,26 +162,24 @@ function Dashboard(props) {
   };
 
   const updateTemplate = async updatedTemplate => {
-    console.log("tosend:", updatedTemplate);
+    console.log('tosend:', updatedTemplate);
     try {
       let updated = await Auth.fetch({
-        method: "put",
-        url: `http://localhost:3001/${resourcePath}/Templates/${
-          updatedTemplate.template_id
-        }`,
-        data: { ...updatedTemplate }
+        method: 'put',
+        url: `http://localhost:3001/${resourcePath}/Templates/${updatedTemplate.template_id}`,
+        data: { ...updatedTemplate },
       });
 
       if (updated.template[0].update_template) {
         getTemplates().then(res => {
-          console.log("templates:", res.templates);
+          console.log('templates:', res.templates);
           if (res.templates) {
             setTemplates(res.templates);
           }
         });
       }
     } catch (err) {
-      console.log(err, "Error updating template.");
+      console.log(err, 'Error updating template.');
     }
   };
 
@@ -194,30 +191,23 @@ function Dashboard(props) {
     <BrowserRouter>
       <div className={classes.root}>
         <CssBaseline />
-        <MenuAppBar
-          handleLogout={props.handleLogout}
-          handleDrawerToggle={handleDrawerToggle}
-        />
+        <MenuAppBar handleLogout={props.handleLogout} handleDrawerToggle={handleDrawerToggle} />
         <Drawer
           open={drawerOpen}
           onClose={handleDrawerToggle}
           variant="temporary"
           className={classes.drawer}
           classes={{
-            paper: classes.drawerPaper
-          }}
-        >
-          <Profile
-            currentUser={currentUser}
-            handleLogout={props.handleLogout}
-          />
+            paper: classes.drawerPaper,
+          }}>
+          <Profile currentUser={currentUser} handleLogout={props.handleLogout} />
           <div className={classes.toolbar} />
           <Divider />
           <DrawerItems handleDrawerToggle={handleDrawerToggle} role={role} />
         </Drawer>
         <main className={classes.content}>
           <div className={classes.toolbar} />
-          {role === "customer" && (
+          {role === 'customer' && (
             <>
               <PrivateRoute
                 exact
@@ -249,7 +239,7 @@ function Dashboard(props) {
             </>
           )}
 
-          {role === "business" && (
+          {role === 'business' && (
             <>
               <PrivateRoute
                 exact
