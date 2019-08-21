@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-
+import { Link as RouterLink } from 'react-router-dom';
+import clsx from 'clsx';
 import {
   Grid,
   Typography,
@@ -10,9 +11,12 @@ import {
   Chip,
   Avatar,
   Button,
+  Snackbar,
+  SnackbarContent,
 } from '@material-ui/core';
-
-import { CardGiftcard, Place, ArrowBack } from '@material-ui/icons';
+import { green } from '@material-ui/core/colors';
+import { CardGiftcard, Place, ArrowBack, CheckCircle, Close } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/core/styles';
 
 import ExpireDate from './ExpireDate';
 import AuthHelperMethods from '../../AuthHelperMethods';
@@ -21,26 +25,18 @@ const Auth = new AuthHelperMethods('http://localhost:3001');
 export default function CouponPage(props) {
   const [batch, setBatch] = useState({});
   const [isClaimed, setIsClaimed] = useState(props.isClaimed || false);
-  const [couponID, setCouponID] = useState(props.CouponID || null);
-  const [coupon, setCoupon] = useState({});
+  const [openSuccess, setOpenSuccess] = React.useState(false);
+
+  function handleClose(event, reason) {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSuccess(false);
+  }
 
   //Get the initial batch information.
   useEffect(() => {
-    if (isClaimed && couponID) {
-      // setTimeout(function() {
-      Auth.fetch({
-        method: 'get',
-        url: `http://localhost:3001/Customers/${props.currentUser.customer_id}/Coupons/${couponID}`,
-        data: {},
-      }).then(res => {
-        if (res && res.coupon) {
-          console.log(res.coupon);
-        } else {
-          console.log('Coupon Not Found');
-        }
-      });
-      // }, 3000);
-    }
     Auth.fetch({
       method: 'get',
       url: `http://localhost:3001/Batches/${props.match.params.batchID}`,
@@ -53,7 +49,7 @@ export default function CouponPage(props) {
         console.log('Not Found');
       }
     });
-  }, [props.match.params.batchID, props.currentUser.customer_id, isClaimed, couponID]);
+  }, [props.match.params.batchID, props.currentUser.customer_id]);
 
   const handleClaim = () => {
     Auth.fetch({
@@ -66,7 +62,7 @@ export default function CouponPage(props) {
       if (res) {
         console.log(res);
         setIsClaimed(true);
-        setCouponID(res.coupon_id);
+        setOpenSuccess(true);
       } else {
         console.log('Not Found');
       }
@@ -96,34 +92,92 @@ export default function CouponPage(props) {
 
                 <Grid item xs={4} md={12} style={{ padding: '7px' }}>
                   {batch.business_type && (
-                    <Chip
-                      avatar={<Avatar>{batch.business_type.charAt(0)}</Avatar>}
-                      label={batch.business_type}
-                      color="primary"
-                      clickable
-                      size="small"
-                    />
+                    <RouterLink to={`/Discover/${batch.business_type}`}>
+                      <Chip
+                        avatar={<Avatar>{batch.business_type.charAt(0)}</Avatar>}
+                        label={batch.business_type}
+                        color="primary"
+                        clickable
+                        size="small"
+                      />
+                    </RouterLink>
                   )}
                 </Grid>
                 <Grid item xs={8} md={12}>
                   {batch.expiry_date && <ExpireDate date={batch.expiry_date} />}
                 </Grid>
-              </Grid>
-              <Divider variant="middle" />
+                <Divider variant="middle" />
 
-              <Typography variant="subtitle1">
-                <Place style={{ color: 'red' }} />
-                {` ${batch.business_name}`}
-              </Typography>
-              <div style={{ marginTop: '10px' }}>
-                <Button color="primary" onClick={handleClaim} disabled={isClaimed}>
-                  Claim Coupon
-                </Button>
-              </div>
+                <Typography variant="subtitle1">
+                  <Place style={{ color: 'red' }} />
+                  {` ${batch.business_name}`}
+                </Typography>
+                <div style={{ marginTop: '10px' }}>
+                  <Button color="primary" onClick={handleClaim} disabled={isClaimed}>
+                    Claim Coupon
+                  </Button>
+                </div>
+              </Grid>
             </Paper>
           </Grid>
         </Grid>
       </Grid>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        open={openSuccess}
+        autoHideDuration={5000}
+        onClose={handleClose}>
+        <MySnackbarContentWrapper
+          onClose={handleClose}
+          variant="success"
+          message="Coupon Claimed. Great Choice!"
+        />
+      </Snackbar>
     </React.Fragment>
+  );
+}
+
+const useStyles1 = makeStyles(theme => ({
+  success: {
+    backgroundColor: green[600],
+  },
+  icon: {
+    fontSize: 20,
+  },
+  iconVariant: {
+    opacity: 0.9,
+    marginRight: theme.spacing(1),
+  },
+  message: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+}));
+
+function MySnackbarContentWrapper(props) {
+  const classes = useStyles1();
+  const { className, message, onClose, variant, ...other } = props;
+  const Icon = CheckCircle;
+
+  return (
+    <SnackbarContent
+      className={clsx(classes[variant], className)}
+      aria-describedby="client-snackbar"
+      message={
+        <span id="client-snackbar" className={classes.message}>
+          <Icon className={clsx(classes.icon, classes.iconVariant)} />
+          {message}
+        </span>
+      }
+      action={[
+        <IconButton key="close" aria-label="close" color="inherit" onClick={onClose}>
+          <Close className={classes.icon} />
+        </IconButton>,
+      ]}
+      {...other}
+    />
   );
 }
