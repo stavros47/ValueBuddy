@@ -11,9 +11,9 @@ import Batches from './Batches';
 import Templates from './Templates';
 import Coupons from './Coupons';
 import Profile from './Profile';
-import BrowseCoupons from './BrowseCoupons';
-import Category from './BrowseCoupons/Category';
-import CouponPage from './Coupons/CouponPage';
+import BrowseBatches from './Batches/BrowseBatches';
+import Category from './Batches/Category';
+import BatchPage from './Batches/BatchPage';
 import AuthHelperMethods from './AuthHelperMethods';
 
 const Auth = new AuthHelperMethods('http://localhost:3001');
@@ -220,7 +220,7 @@ function Dashboard(props) {
               <PrivateRoute
                 exact
                 path="/Discover"
-                component={BrowseCoupons}
+                component={BrowseBatches}
                 resourcePath={resourcePath}
                 currentUser={currentUser}
               />
@@ -233,7 +233,7 @@ function Dashboard(props) {
               <PrivateRoute
                 exact
                 path="/Discover/:categoryName/:batchID"
-                component={CouponPage}
+                component={BatchPage}
                 currentUser={currentUser}
               />
             </>
