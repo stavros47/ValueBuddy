@@ -1,14 +1,14 @@
-import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { Grid, Paper, Typography } from '@material-ui/core'
-import Place from '@material-ui/icons/Place'
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { Grid, Paper, Typography } from '@material-ui/core';
+import Place from '@material-ui/icons/Place';
 /* 
   A Date handling library that helps with date formating/parsing
   - using date_fns parseIso function I can get back a Date object from an iso date string
   - using date_fns format function I can format the date object to any desired format
   ex: format(parseISO(newBatch.start_date), "do-MMM-yyyy")
 */
-import { parseISO, formatDistanceToNow, isAfter } from 'date-fns'
+import { parseISO, formatDistanceToNow, isAfter } from 'date-fns';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -64,17 +64,29 @@ const useStyles = makeStyles(theme => ({
     marginTop: '10px',
   },
   count_sm: {},
-}))
+}));
 
 const availableCoupons = (created, claimed) => {
-  return created - claimed
-}
+  return created - claimed;
+};
 
 /*The actual Batch Item*/
 export default function CouponInstance(props) {
-  const classes = useStyles()
+  const classes = useStyles();
 
-  const { batch } = props
+  const {
+    description,
+    discount,
+    discount_type,
+    business_type,
+    business_name,
+    start_date,
+    expiry_date,
+    created_count,
+    claimed_count,
+    redeemed_count,
+    status,
+  } = props;
 
   return (
     <Grid item>
@@ -82,51 +94,40 @@ export default function CouponInstance(props) {
         <Grid container item spacing={1} justify="space-around">
           <Grid item xs={3}>
             <Paper className={classes.image}>
-              <span className={classes.img}>{`${
-                batch.discount_type === 'Flat' ? '$' : ''
-              }${batch.discount}${
-                batch.discount_type === 'Percentage' ? '%' : ''
+              <span className={classes.img}>{`${discount_type === 'Flat' ? '$' : ''}${discount}${
+                discount_type === 'Percentage' ? '%' : ''
               }`}</span>
             </Paper>
           </Grid>
           <Grid xs={6} md={7} item container>
             <Grid item xs={12}>
               <Typography variant="h5" className={classes.descr}>
-                {batch.description}
+                {description}
               </Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h5" className={classes.business}>
                 <Place style={{ color: 'red' }} />
-                {` ${batch.business_name}`}
+                {` ${business_name}`}
               </Typography>
             </Grid>
           </Grid>
           <Grid xs={3} md={2} item container>
             <Grid item>
-              <Typography
-                variant="caption"
-                color="textSecondary"
-                className={classes.expiry}
-              >
+              <Typography variant="caption" color="textSecondary" className={classes.expiry}>
                 {`${
-                  isAfter(parseISO(batch.expiry_date), new Date())
-                    ? 'Expires'
-                    : 'Expired'
-                } ${formatDistanceToNow(parseISO(batch.expiry_date), {
+                  isAfter(parseISO(expiry_date), new Date()) ? 'Expires' : 'Expired'
+                } ${formatDistanceToNow(parseISO(expiry_date), {
                   addSuffix: true,
                 })}`}
               </Typography>
               <Typography variant="caption" className={classes.count}>
-                {`${availableCoupons(
-                  batch.created_count,
-                  batch.claimed_count
-                )} / ${batch.created_count}`}
+                {`${availableCoupons(created_count, claimed_count)} / ${created_count}`}
               </Typography>
             </Grid>
           </Grid>
         </Grid>
       </Paper>
     </Grid>
-  )
+  );
 }
