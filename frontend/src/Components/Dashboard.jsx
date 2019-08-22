@@ -261,6 +261,12 @@ function Dashboard(props) {
               />
               <PrivateRoute
                 exact
+                path="/Batches/:batchID"
+                component={BatchPage}
+                currentUser={currentUser}
+              />
+              <PrivateRoute
+                exact
                 path="/Coupons"
                 component={Coupons}
                 resourcePath={resourcePath}
