@@ -22,16 +22,17 @@ import ExpireDate from './ExpireDate';
 import AuthHelperMethods from '../../AuthHelperMethods';
 
 const Auth = new AuthHelperMethods('http://localhost:3001');
-export default function CouponPage(props) {
+
+export default function BatchPage(props) {
   const [batch, setBatch] = useState({});
   const [isClaimed, setIsClaimed] = useState(props.isClaimed || false);
   const [openSuccess, setOpenSuccess] = React.useState(false);
+  const { match, currentUser } = props;
 
   function handleClose(event, reason) {
     if (reason === 'clickaway') {
       return;
     }
-
     setOpenSuccess(false);
   }
 
@@ -39,7 +40,7 @@ export default function CouponPage(props) {
   useEffect(() => {
     Auth.fetch({
       method: 'get',
-      url: `http://localhost:3001/Batches/${props.match.params.batchID}`,
+      url: `http://localhost:3001/Batches/${match.params.batchID}`,
       data: {},
     }).then(res => {
       if (res && res.batch) {
@@ -49,7 +50,7 @@ export default function CouponPage(props) {
         console.log('Not Found');
       }
     });
-  }, [props.match.params.batchID, props.currentUser.customer_id]);
+  }, [match.params.batchID]);
 
   const handleClaim = () => {
     Auth.fetch({
@@ -82,7 +83,7 @@ export default function CouponPage(props) {
           </Grid>
           <Grid item xs={10} sm={10} md={11}>
             <Paper>
-              <Grid container direction="row" justify="flex-start" alignItems="center">
+              <Grid container direction="row" justify="flex-start" alignItems="flex-start">
                 <Grid item xs={12}>
                   <Typography variant="h6" align="center">
                     <CardGiftcard />
@@ -108,15 +109,17 @@ export default function CouponPage(props) {
                 </Grid>
                 <Divider variant="middle" />
 
-                <Typography variant="subtitle1">
+                <Typography variant="subtitle1" align="left">
                   <Place style={{ color: 'red' }} />
                   {` ${batch.business_name}`}
                 </Typography>
-                <div style={{ marginTop: '10px' }}>
-                  <Button color="primary" onClick={handleClaim} disabled={isClaimed}>
-                    Claim Coupon
-                  </Button>
-                </div>
+                {currentUser.role === 'customer' && (
+                  <div style={{ marginTop: '10px' }}>
+                    <Button color="primary" onClick={handleClaim} disabled={isClaimed}>
+                      Claim Coupon
+                    </Button>
+                  </div>
+                )}
               </Grid>
             </Paper>
           </Grid>
