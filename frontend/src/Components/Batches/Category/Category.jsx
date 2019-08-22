@@ -63,7 +63,15 @@ export default function Category(props) {
               to={`${match.url}/${batch.batch_id}`}
               key={batch.batch_id}>
               <Grid item>
-                <BatchInstance batch={batch} />
+                <BatchInstance
+                  description={batch.description}
+                  business_name={batch.business_name}
+                  discount={batch.discount}
+                  discount_type={batch.discount_type}
+                  expiry_date={batch.expiry_date}
+                  created_count={batch.created_count}
+                  claimed_count={batch.claimed_count}
+                />
               </Grid>
             </Link>
           );
