@@ -28,7 +28,7 @@ export default function Batches(props) {
   const classes = useStyles();
   const [batches, setBatches] = useState([]);
   const [open, setOpen] = React.useState(false);
-  const { resourcePath, templates, match } = props;
+  const { resourcePath, templates, match, currentUser } = props;
 
   function handleClickOpen() {
     setOpen(true);
@@ -143,6 +143,7 @@ export default function Batches(props) {
                 expiry_date={batch.expiry_date}
                 created_count={batch.created_count}
                 claimed_count={batch.claimed_count}
+                isBusiness={currentUser.role === 'business'}
               />
             </RouterLink>
           </Grid>
