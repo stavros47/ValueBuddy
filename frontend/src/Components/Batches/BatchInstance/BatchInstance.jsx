@@ -86,7 +86,12 @@ export default function CouponInstance(props) {
     claimed_count,
     redeemed_count,
     status,
+    isBusiness,
   } = props;
+  //Temporarily remove warnings for unused variables
+  if (business_type && start_date && redeemed_count && status) {
+    console.log('BatchInstance');
+  }
 
   return (
     <Grid item>
@@ -121,9 +126,11 @@ export default function CouponInstance(props) {
                   addSuffix: true,
                 })}`}
               </Typography>
-              <Typography variant="caption" className={classes.count}>
-                {`${availableCoupons(created_count, claimed_count)} / ${created_count}`}
-              </Typography>
+              {isBusiness && (
+                <Typography variant="caption" className={classes.count}>
+                  {`${availableCoupons(created_count, claimed_count)} / ${created_count}`}
+                </Typography>
+              )}
             </Grid>
           </Grid>
         </Grid>
