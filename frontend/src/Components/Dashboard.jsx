@@ -10,6 +10,7 @@ import { PrivateRoute } from './PrivateRoute';
 import Batches from './Batches';
 import Templates from './Templates';
 import Coupons from './Coupons';
+import CouponPage from './Coupons/CouponPage';
 import Profile from './Profile';
 import BrowseBatches from './Batches/BrowseBatches';
 import Category from './Batches/Category';
@@ -211,14 +212,6 @@ function Dashboard(props) {
             <>
               <PrivateRoute
                 exact
-                path="/Coupons"
-                component={Coupons}
-                resourcePath={resourcePath}
-                currentUser={currentUser}
-              />
-
-              <PrivateRoute
-                exact
                 path="/Discover"
                 component={BrowseBatches}
                 resourcePath={resourcePath}
@@ -234,6 +227,20 @@ function Dashboard(props) {
                 exact
                 path="/Discover/:categoryName/:batchID"
                 component={BatchPage}
+                currentUser={currentUser}
+              />
+              <PrivateRoute
+                exact
+                path="/Coupons"
+                component={Coupons}
+                resourcePath={resourcePath}
+                currentUser={currentUser}
+              />
+              <PrivateRoute
+                exact
+                path="/Coupons/:couponID"
+                component={CouponPage}
+                resourcePath={resourcePath}
                 currentUser={currentUser}
               />
             </>
@@ -263,6 +270,7 @@ function Dashboard(props) {
                 exact
                 path="/Batches/:batchID"
                 component={BatchPage}
+                resourcePath={resourcePath}
                 currentUser={currentUser}
               />
               <PrivateRoute
