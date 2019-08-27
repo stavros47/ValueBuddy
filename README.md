@@ -11,7 +11,7 @@ Using web technologies I am creating a single page application communicating wit
 * PostgreSQL for the database.
 * ReactJS with hooks for the front-end.
 ### Details:
-* Using JWT tokens for authentication so the API has no state. The token saves the users  (business/custom*e) and their id.Some Routes are role protected, while others are available to all authenticated users.
+* Using JWT tokens for authentication so the API has no state. The token saves the users role:business/customer/admin and their id.Some Routes are role protected, while others are available to all authenticated users.
 * *ToDo: create a script to install/initialize and load the database from an sql file.*
 
 ## Intro: 
