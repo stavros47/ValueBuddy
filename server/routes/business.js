@@ -204,19 +204,33 @@ router.get('/:id/Batches/:batch_id', authorize([Role.Business, Role.Admin]), fun
   next
 ) {
   //Only the business with :id or an admin
+  const response = {};
   database
     .raw(
       `SELECT * FROM get_business_batch(${parseInt(req.params.id)},${parseInt(
         req.params.batch_id
       )})`
     )
-    .then(data => {
-      if (data.rows === undefined || data.rows.length == 0) {
-        res.status(404).json({ message: 'Batch not found!', batch: {} });
-      } else {
-        res.status(200).json({ batch: data.rows });
+    .then(batch => {
+      if ((batch && batch.rows !== undefined) || batch.rows.length != 0) {
+        response.batch = batch.rows[0];
+        return database.raw(
+          `SELECT * FROM get_ordered_batch_coupons(${parseInt(req.params.id)},${parseInt(
+            req.params.batch_id
+          )},${req.query.orderBy},${req.query.isAsc})`
+        );
       }
-    });
+      res.status(404).json({ message: 'Batch not found!', batch: {} });
+    })
+    .then(coupons => {
+      if (coupons && coupons.rows !== undefined) {
+        response.coupons = coupons.rows;
+      } else {
+        response.coupons = [];
+      }
+      res.status(200).json(response);
+    })
+    .catch(err => console.log(err));
 });
 
 /* Update a batch of a specific business */
