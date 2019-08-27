@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+
 import clsx from 'clsx';
 import {
   Grid,
@@ -18,6 +19,7 @@ import { green } from '@material-ui/core/colors';
 import { CardGiftcard, Place, ArrowBack, CheckCircle, Close } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 
+import SortFilter from './SortFilter';
 import ExpireDate from './ExpireDate';
 import AuthHelperMethods from '../../AuthHelperMethods';
 
@@ -25,9 +27,10 @@ const Auth = new AuthHelperMethods('http://localhost:3001');
 
 export default function BatchPage(props) {
   const [batch, setBatch] = useState({});
+  const [batchCoupons, setBatchCoupons] = useState([]);
   const [isClaimed, setIsClaimed] = useState(props.isClaimed || false);
   const [openSuccess, setOpenSuccess] = React.useState(false);
-  const { match, currentUser } = props;
+  const { match, currentUser, resourcePath } = props;
 
   function handleClose(event, reason) {
     if (reason === 'clickaway') {
@@ -38,26 +41,29 @@ export default function BatchPage(props) {
 
   //Get the initial batch information.
   useEffect(() => {
+    let orderBy = 'customer_name';
+    let isAsc = false;
     Auth.fetch({
       method: 'get',
-      url: `http://localhost:3001/Batches/${match.params.batchID}`,
+      url: `http://localhost:3001/${resourcePath}/Batches/${match.params.batchID}?orderBy='${orderBy}'&isAsc=${isAsc}`,
       data: {},
-    }).then(res => {
-      if (res && res.batch) {
-        console.log(res.batch);
-        setBatch(res.batch[0]);
-      } else {
-        console.log('Not Found');
-      }
-    });
-  }, [match.params.batchID]);
+    })
+      .then(res => {
+        if (res && res.batch) {
+          console.log('res', res);
+          setBatch(res.batch);
+          setBatchCoupons(res.coupons);
+        } else {
+          console.log('Not Found');
+        }
+      })
+      .catch(e => console.log(e));
+  }, [match.params.batchID, resourcePath]);
 
   const handleClaim = () => {
     Auth.fetch({
       method: 'post',
-      url: `http://localhost:3001/Business/${batch.business_id}/Batches/${
-        props.match.params.batchID
-      }/Coupons`,
+      url: `http://localhost:3001/Business/${batch.business_id}/Batches/${props.match.params.batchID}/Coupons`,
       data: {},
     }).then(res => {
       if (res) {
@@ -108,21 +114,40 @@ export default function BatchPage(props) {
                   {batch.expiry_date && <ExpireDate date={batch.expiry_date} />}
                 </Grid>
                 <Divider variant="middle" />
-
-                <Typography variant="subtitle1" align="left">
-                  <Place style={{ color: 'red' }} />
-                  {` ${batch.business_name}`}
-                </Typography>
-                {currentUser.role === 'customer' && (
-                  <div style={{ marginTop: '10px' }}>
-                    <Button color="primary" onClick={handleClaim} disabled={isClaimed}>
-                      Claim Coupon
-                    </Button>
-                  </div>
-                )}
+                <Grid item xs={12}>
+                  {' '}
+                  {currentUser.role === 'customer' && (
+                    <div style={{ marginTop: '10px' }}>
+                      <Button color="primary" onClick={handleClaim} disabled={isClaimed}>
+                        Claim Coupon
+                      </Button>
+                    </div>
+                  )}
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="subtitle1" align="left">
+                    <Place style={{ color: 'red' }} />
+                    {` ${batch.business_name}`}
+                  </Typography>
+                </Grid>
               </Grid>
             </Paper>
           </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <SortFilter />
+        </Grid>
+        <Grid item xs={2} md={1}></Grid>
+        <Grid container item xs={10} md={11} style={{ marginTop: '10px' }}>
+          {batchCoupons.map(coupon => {
+            return (
+              <Grid item xs={12} key={coupon.coupon_id}>
+                <Paper style={{ border: '1px solid green', marginTop: '4px', padding: '8px' }}>
+                  <Typography variant="subtitle2">{coupon.customer_name}</Typography>
+                </Paper>
+              </Grid>
+            );
+          })}
         </Grid>
       </Grid>
       <Snackbar
