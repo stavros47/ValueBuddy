@@ -26,11 +26,33 @@ import AuthHelperMethods from '../../AuthHelperMethods';
 const Auth = new AuthHelperMethods('http://localhost:3001');
 
 export default function BatchPage(props) {
+  const { match, currentUser, resourcePath } = props;
+
   const [batch, setBatch] = useState({});
   const [batchCoupons, setBatchCoupons] = useState([]);
   const [isClaimed, setIsClaimed] = useState(props.isClaimed || false);
   const [openSuccess, setOpenSuccess] = React.useState(false);
-  const { match, currentUser, resourcePath } = props;
+  const [selectedOption, setSelectedOption] = useState({
+    label: 'Customer Name ASC',
+    value: { field: 'customer_name', asc: true },
+  });
+  const [filterRedeemed, setFilterRedeemed] = useState(false);
+
+  const selectOptions = [
+    { label: 'Customer Name ASC', value: { field: 'customer_name', asc: true } },
+    { label: 'Customer Name DESC', value: { field: 'customer_name', asc: false } },
+    { label: 'Date used ASC', value: { field: 'date_used', asc: true } },
+    { label: 'Date used DESC', value: { field: 'date_used', asc: false } },
+  ];
+
+  const handleSortChange = selectedOption => {
+    setSelectedOption(selectedOption);
+    console.log(`Option selected:`, selectedOption);
+  };
+
+  const handleSwitch = name => event => {
+    setFilterRedeemed(event.target.checked);
+  };
 
   function handleClose(event, reason) {
     if (reason === 'clickaway') {
@@ -41,8 +63,8 @@ export default function BatchPage(props) {
 
   //Get the initial batch information.
   useEffect(() => {
-    let orderBy = 'customer_name';
-    let isAsc = false;
+    let orderBy = selectedOption.value.field ? selectedOption.value.field : 'customer_name';
+    let isAsc = selectedOption.value.asc ? selectedOption.value.asc : true;
     Auth.fetch({
       method: 'get',
       url: `http://localhost:3001/${resourcePath}/Batches/${match.params.batchID}?orderBy='${orderBy}'&isAsc=${isAsc}`,
@@ -58,7 +80,7 @@ export default function BatchPage(props) {
         }
       })
       .catch(e => console.log(e));
-  }, [match.params.batchID, resourcePath]);
+  }, [match.params.batchID, resourcePath, selectedOption]);
 
   const handleClaim = () => {
     Auth.fetch({
@@ -78,7 +100,7 @@ export default function BatchPage(props) {
 
   return (
     <React.Fragment>
-      <Grid container direction="row" justify="flex-start" alignItems="flex-start">
+      <Grid container direction="row" justify="flex-start" alignItems="flex-start" spacing={2}>
         <Grid container item>
           <Grid item xs={2} sm={2} md={1}>
             <Tooltip title="Back">
@@ -134,19 +156,29 @@ export default function BatchPage(props) {
             </Paper>
           </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <SortFilter />
+        <Divider variant="fullWidth" />
+
+        <Grid item xs={12} md={4}>
+          <SortFilter
+            selectedOption={selectedOption}
+            options={selectOptions}
+            handleSortChange={handleSortChange}
+            filterRedeemed={filterRedeemed}
+            handleSwitch={handleSwitch}
+          />
         </Grid>
         <Grid item xs={2} md={1}></Grid>
         <Grid container item xs={10} md={11} style={{ marginTop: '10px' }}>
           {batchCoupons.map(coupon => {
-            return (
-              <Grid item xs={12} key={coupon.coupon_id}>
-                <Paper style={{ border: '1px solid green', marginTop: '4px', padding: '8px' }}>
-                  <Typography variant="subtitle2">{coupon.customer_name}</Typography>
-                </Paper>
-              </Grid>
-            );
+            if (filterRedeemed === coupon.is_redeemed) {
+              return (
+                <Grid item xs={12} key={coupon.coupon_id}>
+                  <Paper style={{ border: '1px solid green', marginTop: '4px', padding: '8px' }}>
+                    <Typography variant="subtitle2">{coupon.customer_name}</Typography>
+                  </Paper>
+                </Grid>
+              );
+            }
           })}
         </Grid>
       </Grid>
