@@ -15,6 +15,8 @@ import Profile from './Profile';
 import BrowseBatches from './Batches/BrowseBatches';
 import Category from './Batches/Category';
 import BatchPage from './Batches/BatchPage';
+import Redeem from './Redeem';
+
 import AuthHelperMethods from './AuthHelperMethods';
 
 const Auth = new AuthHelperMethods('http://localhost:3001');
@@ -228,6 +230,7 @@ function Dashboard(props) {
                 path="/Discover/:categoryName/:batchID"
                 component={BatchPage}
                 currentUser={currentUser}
+                resourcePath={resourcePath}
               />
               <PrivateRoute
                 exact
@@ -275,8 +278,8 @@ function Dashboard(props) {
               />
               <PrivateRoute
                 exact
-                path="/Coupons"
-                component={Coupons}
+                path="/Redeem"
+                component={Redeem}
                 resourcePath={resourcePath}
                 currentUser={currentUser}
               />
