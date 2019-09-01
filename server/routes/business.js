@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const database = require('../database');
 const { businesses, businessByID } = require('../database/queries');
+const uuidv4 = require('uuid/v4');
 
 const { validate, validDetails, getByEmail } = require('../helpers/validation');
 const bcrypt = require('bcrypt');
@@ -348,6 +349,29 @@ router.get('/:id/Coupons', authorize(Role.Business), function(req, res, next) {
   });
 });
 
+/* Redeem a Coupon. */
+router.post('/:id/Coupons', authorize(Role.Business), function(req, res, next) {
+  //Only the business with :id
+  database
+    .raw(
+      `SELECT * FROM redeem_coupon(${parseInt(req.params.id)},'${req.body.redeem_code}', ${
+        req.body.redeemed_item ? `'${req.body.redeemed_item}'` : `NULL`
+      })`
+    )
+    .then(data => {
+      if (data.rows !== undefined && data.rows.length != 0 && data.rows[0].redeem_coupon) {
+        res.status(200).json({
+          redeem_success: data.rows[0].redeem_coupon,
+          message: 'Coupon Succesfuly redeemed.',
+        });
+      } else
+        res.status(400).json({
+          redeem_success: false,
+          message: `Coupon could not be redeemed`,
+        });
+    });
+});
+
 /* GET all coupons for a batch */
 router.get('/:id/Batches/:batch_id/Coupons', authorize(Role.Business), function(req, res, next) {
   //Only the business with :id
@@ -371,7 +395,8 @@ router.post('/:id/Batches/:batch_id/Coupons', authorize(), function(req, res, ne
     .raw(
       `SELECT * FROM claim_from_batch(${parseInt(req.params.id)},${parseInt(
         req.params.batch_id
-      )},${parseInt(req.user.role_id)})`
+      )},${parseInt(req.user.role_id)},:code)`,
+      { code: uuidv4() }
     )
     .then(data => {
       if (
