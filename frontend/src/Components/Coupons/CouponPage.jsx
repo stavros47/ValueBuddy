@@ -14,11 +14,10 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Slide,
 } from '@material-ui/core';
-import { CardGiftcard, Place, ArrowBack } from '@material-ui/icons';
+import { CardGiftcard, Place, ArrowBack, FileCopy } from '@material-ui/icons';
 
 import ExpireDate from '../Batches/BatchPage/ExpireDate';
 import AuthHelperMethods from '../AuthHelperMethods';
@@ -43,6 +42,12 @@ export default function CouponPage(props) {
   }
   const { match, currentUser, resourcePath, isExpired } = props;
 
+  const handleClickCopy = () => {
+    if (coupon.redeem_code) {
+      navigator.clipboard.writeText(coupon.redeem_code);
+    }
+  };
+
   //Get the initial coupon information.
   useEffect(() => {
     Auth.fetch({
@@ -59,24 +64,6 @@ export default function CouponPage(props) {
       }
     });
   }, [match.params.couponID, resourcePath]);
-
-  const handleRedeem = () => {
-    // Auth.fetch({
-    //   method: 'post',
-    //   url: `http://localhost:3001/Business/${batch.business_id}/Batches/${
-    //     props.match.params.batchID
-    //   }/Coupons`,
-    //   data: {},
-    // }).then(res => {
-    //   if (res) {
-    //     console.log(res);
-    //     setIsClaimed(true);
-    //     setOpenSuccess(true);
-    //   } else {
-    //     console.log('Not Found');
-    //   }
-    // });
-  };
 
   return (
     <React.Fragment>
@@ -148,13 +135,22 @@ export default function CouponPage(props) {
         onClose={handleClose}
         aria-labelledby="alert-dialog-slide-title"
         aria-describedby="alert-dialog-slide-description">
-        <DialogTitle id="alert-dialog-slide-title">{`Show this at ${
-          coupon.business_name
-        } to Redeem your coupon!`}</DialogTitle>
+        <DialogTitle id="alert-dialog-slide-title">{`Show this at ${coupon.business_name} to Redeem your coupon!`}</DialogTitle>
         <DialogContent>
-          <Typography variant="body1" align="center">
-            {coupon.redeem_code}
-          </Typography>
+          <Grid container>
+            <Grid item xs={10}>
+              <Typography variant="caption" align="center">
+                {coupon.redeem_code}
+              </Typography>
+            </Grid>
+            <Grid item xs={2}>
+              <Tooltip title="Copy to Clipboard" aria-label="copy">
+                <IconButton aria-label="copyClipboard" onClick={handleClickCopy}>
+                  <FileCopy />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          </Grid>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
