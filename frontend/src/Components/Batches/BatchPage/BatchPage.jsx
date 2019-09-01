@@ -63,24 +63,41 @@ export default function BatchPage(props) {
 
   //Get the initial batch information.
   useEffect(() => {
-    let orderBy = selectedOption.value.field ? selectedOption.value.field : 'customer_name';
-    let isAsc = selectedOption.value.asc ? selectedOption.value.asc : true;
-    Auth.fetch({
-      method: 'get',
-      url: `http://localhost:3001/${resourcePath}/Batches/${match.params.batchID}?orderBy='${orderBy}'&isAsc=${isAsc}`,
-      data: {},
-    })
-      .then(res => {
-        if (res && res.batch) {
-          console.log('res', res);
-          setBatch(res.batch);
-          setBatchCoupons(res.coupons);
-        } else {
-          console.log('Not Found');
-        }
+    if (currentUser.role === 'customer') {
+      Auth.fetch({
+        method: 'get',
+        url: `http://localhost:3001/Batches/${match.params.batchID}`,
+        data: {},
       })
-      .catch(e => console.log(e));
-  }, [match.params.batchID, resourcePath, selectedOption]);
+        .then(res => {
+          if (res && res.batch) {
+            console.log('res', res);
+            setBatch(res.batch);
+          } else {
+            console.log('Not Found');
+          }
+        })
+        .catch(e => console.log(e));
+    } else if (currentUser.role === 'business') {
+      let orderBy = selectedOption.value.field ? selectedOption.value.field : 'customer_name';
+      let isAsc = selectedOption.value.asc ? selectedOption.value.asc : true;
+      Auth.fetch({
+        method: 'get',
+        url: `http://localhost:3001/${resourcePath}/Batches/${match.params.batchID}?orderBy='${orderBy}'&isAsc=${isAsc}`,
+        data: {},
+      })
+        .then(res => {
+          if (res && res.batch) {
+            console.log('res', res);
+            setBatch(res.batch);
+            setBatchCoupons(res.coupons);
+          } else {
+            console.log('Not Found');
+          }
+        })
+        .catch(e => console.log(e));
+    }
+  }, [match.params.batchID, currentUser.role, resourcePath, selectedOption]);
 
   const handleClaim = () => {
     Auth.fetch({
@@ -157,30 +174,35 @@ export default function BatchPage(props) {
           </Grid>
         </Grid>
         <Divider variant="fullWidth" />
-
-        <Grid item xs={12} md={4}>
-          <SortFilter
-            selectedOption={selectedOption}
-            options={selectOptions}
-            handleSortChange={handleSortChange}
-            filterRedeemed={filterRedeemed}
-            handleSwitch={handleSwitch}
-          />
-        </Grid>
-        <Grid item xs={2} md={1}></Grid>
-        <Grid container item xs={10} md={11} style={{ marginTop: '10px' }}>
-          {batchCoupons.map(coupon => {
-            if (filterRedeemed === coupon.is_redeemed) {
-              return (
-                <Grid item xs={12} key={coupon.coupon_id}>
-                  <Paper style={{ border: '1px solid green', marginTop: '4px', padding: '8px' }}>
-                    <Typography variant="subtitle2">{coupon.customer_name}</Typography>
-                  </Paper>
-                </Grid>
-              );
-            }
-          })}
-        </Grid>
+        {currentUser.role === 'business' ? (
+          <>
+            <Grid item xs={12} md={4}>
+              <SortFilter
+                selectedOption={selectedOption}
+                options={selectOptions}
+                handleSortChange={handleSortChange}
+                filterRedeemed={filterRedeemed}
+                handleSwitch={handleSwitch}
+              />
+            </Grid>
+            <Grid item xs={2} md={1}></Grid>
+            <Grid container item xs={10} md={11} style={{ marginTop: '10px' }}>
+              {batchCoupons.map(coupon => {
+                if (filterRedeemed === coupon.is_redeemed) {
+                  return (
+                    <Grid item xs={12} key={coupon.coupon_id}>
+                      <Paper
+                        style={{ border: '1px solid green', marginTop: '4px', padding: '8px' }}>
+                        <Typography variant="subtitle2">{coupon.customer_name}</Typography>
+                      </Paper>
+                    </Grid>
+                  );
+                }
+                return null;
+              })}
+            </Grid>
+          </>
+        ) : null}
       </Grid>
       <Snackbar
         anchorOrigin={{
