@@ -1,23 +1,23 @@
-import decode from "jwt-decode";
-import axios from "axios";
+import decode from 'jwt-decode';
+import axios from 'axios';
 
 export default class AuthHelperMethods {
   // Initializing important variables
   constructor(domain) {
     //THIS LINE IS ONLY USED IN PRODUCTION MODE!
-    this.domain = domain || "http://localhost:3001"; // API server domain
+    this.domain = domain || 'http://localhost:3001'; // API server domain
   }
   login = (email, password) => {
     // Get a token from api server using the fetch api
     return this.fetch({
-      method: "post",
-      url: "http://localhost:3001/signin",
+      method: 'post',
+      url: 'http://localhost:3001/signin',
       data: {
         email,
-        password
-      }
+        password,
+      },
     }).then(res => {
-      console.log("response:", res);
+      console.log('response:', res);
       this.setToken(res.token); // Setting the token in localStorage
       return Promise.resolve(res);
     });
@@ -37,35 +37,35 @@ export default class AuthHelperMethods {
         return true;
       } else return false;
     } catch (err) {
-      console.log("expired check failed! Line 42: AuthService.js");
+      console.log('expired check failed! Line 42: AuthService.js');
       return false;
     }
   };
 
   setToken = idToken => {
     // Saves user token to localStorage
-    localStorage.setItem("id_token", idToken);
+    localStorage.setItem('id_token', idToken);
   };
 
   getToken = () => {
     // Retrieves the user token from localStorage
-    return localStorage.getItem("id_token");
+    return localStorage.getItem('id_token');
   };
 
   logout = () => {
     // Clear user token and profile data from localStorage
-    console.log("Logout");
-    localStorage.removeItem("id_token");
+    console.log('Logout');
+    localStorage.removeItem('id_token');
   };
 
   getTokenData = () => {
     // Using jwt-decode npm package to decode the token
     try {
       let tokenData = decode(this.getToken());
-      console.log("Token decoded.");
+      console.log('Token decoded.');
       return tokenData;
     } catch (err) {
-      console.log("Error line 69 AuthHelperMethods.js");
+      console.log('Error line 69 AuthHelperMethods.js');
       return;
     }
   };
@@ -73,18 +73,18 @@ export default class AuthHelperMethods {
   fetch = options => {
     // performs api calls sending the required authentication headers
     const headers = {
-      Accept: "application/json",
-      "Content-Type": "application/json"
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
     };
     // Setting Authorization header
     // Authorization: Bearer xxxxxxx.xxxxxxxx.xxxxxx
     if (this.loggedIn()) {
-      headers["Authorization"] = "Bearer " + this.getToken();
-      headers["Access-Control-Allow-Origin"] = "*";
-      headers["Access-Control-Allow-Credentials"] = "true";
-      headers["Access-Control-Allow-Methods"] = "GET,HEAD,OPTIONS,POST,PUT";
-      headers["Access-Control-Allow-Headers"] =
-        "Origin, X-Requested-With, Content-Type, Accept, Authorization";
+      headers['Authorization'] = 'Bearer ' + this.getToken();
+      headers['Access-Control-Allow-Origin'] = '*';
+      headers['Access-Control-Allow-Credentials'] = 'true';
+      headers['Access-Control-Allow-Methods'] = 'GET,HEAD,OPTIONS,POST,PUT';
+      headers['Access-Control-Allow-Headers'] =
+        'Origin, X-Requested-With, Content-Type, Accept, Authorization';
     }
     options.headers = headers;
     return (
@@ -93,7 +93,7 @@ export default class AuthHelperMethods {
         .then(res => res.data)
         .catch(error => {
           console.log(error.message, `(${error.response.statusText})`);
-          console.log("response:", error.response.data);
+          console.log('response:', error.response.data);
         })
     );
   };
@@ -107,7 +107,7 @@ export default class AuthHelperMethods {
       // var error = new Error(response.statusText);
       // error.response = response;
       // throw error;
-      console.log("Request status: ", response.statusText);
+      console.log('Request status: ', response.statusText);
       return response;
     }
   };
