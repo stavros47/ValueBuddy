@@ -30,7 +30,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function CouponPage(props) {
   const [coupon, setCoupon] = useState({});
-  const [isRedeemed, setIsRedeemed] = useState(props.isRedeemed || false);
+
   const [openDialog, setOpenDialog] = React.useState(false);
 
   function handleClickOpen() {
@@ -109,9 +109,9 @@ export default function CouponPage(props) {
               <Divider variant="middle" />
               <Grid container item xs={12} direction="column" alignItems="center" justify="center">
                 <Grid item xs={12}>
-                  {currentUser.role === 'customer' && !isRedeemed && !isExpired && (
+                  {currentUser.role === 'customer' && !isExpired && (
                     <div style={{ marginTop: '10px' }}>
-                      <Button color="primary" onClick={handleClickOpen} disabled={isRedeemed}>
+                      <Button color="primary" onClick={handleClickOpen}>
                         Redeem CODE
                       </Button>
                     </div>
