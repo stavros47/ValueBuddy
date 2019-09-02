@@ -15,7 +15,7 @@ router.get('/', authorize(), function(req, res, next) {
   if (req.user.role === 'customer') {
     database
       .raw(
-        `SELECT * FROM get_customer_available_batches_byCategory(${req.user.role_id}, ${req.query.categoryID})`
+        `SELECT * FROM get_customer_available_batches_byCategory(${req.user.role_id}, ${req.query.categoryID}, ${req.query.orderBy},${req.query.isAsc})`
       )
       .then(data => {
         if (data.rows === undefined || data.rows.length == 0) {
