@@ -43,6 +43,8 @@ export default function Coupons(props) {
     { label: 'Expiry Date Desc', value: { field: 'expiry_date', asc: false } },
     { label: 'Business Asc', value: { field: 'business_name', asc: true } },
     { label: 'Business Desc', value: { field: 'business_name', asc: false } },
+    { label: 'Date Used Asc', value: { field: 'date_used', asc: true } },
+    { label: 'Date Used Desc', value: { field: 'date_used', asc: false } },
   ];
 
   const handleSortChange = selectedOption => {
@@ -74,10 +76,13 @@ export default function Coupons(props) {
       method: 'get',
       url: `http://localhost:3001/${resourcePath}/Coupons?category_id=${selectedCategory.value}&status_id=${status}&sortBy=${orderBy}&redeemed=${redeemed}&isAsc=${isAsc}`,
       data: {},
+      validateStatus: function(status) {
+        return (status = 404);
+      },
     })
       .then(res => {
         if (res && res.coupons) {
-          console.log(res.coupons);
+          console.log(res);
           setCoupons(res.coupons);
         }
       })
