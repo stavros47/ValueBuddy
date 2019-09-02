@@ -9,6 +9,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import BatchInstance from './BatchInstance';
 import DialogNewBatch from './DialogNewBatch';
 
+import SortFilterBatches from './SortFilterBatches';
+
 //Helpers
 import AuthHelperMethods from '../AuthHelperMethods';
 
@@ -26,9 +28,52 @@ const useStyles = makeStyles(theme => ({
 
 export default function Batches(props) {
   const classes = useStyles();
+  const { resourcePath, templates, match, currentUser } = props;
+
   const [batches, setBatches] = useState([]);
   const [open, setOpen] = React.useState(false);
-  const { resourcePath, templates, match, currentUser } = props;
+
+  const [selectedFilter, setSelectedFilter] = useState();
+  const [selectedSort, setSelectedSort] = useState();
+  const [filterRedeemed, setFilterRedeemed] = useState(false);
+
+  const sortOptions = [
+    { label: 'Expired Asc', value: { field: 'expiry_date', asc: true } },
+    { label: 'Expired Desc', value: { field: 'expiry_date', asc: false } },
+    { label: 'Started Asc', value: { field: 'start_date', asc: true } },
+    { label: 'Started Desc', value: { field: 'start_date', asc: false } },
+    { label: 'Created # Asc', value: { field: 'created_count', asc: true } },
+    { label: 'Created # Desc', value: { field: 'created_count', asc: false } },
+    { label: 'Claimed # Asc', value: { field: 'claimed_count', asc: true } },
+    { label: 'Claimed # Desc', value: { field: 'claimed_count', asc: false } },
+    { label: 'Redeemed # Asc', value: { field: 'redeemed_count', asc: true } },
+    { label: 'Redeemed # Desc', value: { field: 'redeemed_count', asc: false } },
+  ];
+
+  const filterOptions = [
+    {
+      label: 'Status',
+      options: [{ label: 'Active', value: '1' }, { label: 'Expired', value: '2' }],
+    },
+    {
+      label: 'Discount Type',
+      options: [{ label: 'Percentage', value: 'Percentage' }, { label: 'Flat', value: 'Flat' }],
+    },
+  ];
+
+  const handleSortChange = selectedOption => {
+    setSelectedSort(selectedOption);
+    console.log(`Sort selected:`, selectedOption);
+  };
+
+  const handleFilterChange = selectedOption => {
+    setSelectedFilter(selectedOption);
+    console.log(`Filter selected:`, selectedOption);
+  };
+
+  const handleSwitch = name => event => {
+    setFilterRedeemed(event.target.checked);
+  };
 
   function handleClickOpen() {
     setOpen(true);
@@ -129,7 +174,18 @@ export default function Batches(props) {
             </Hidden>
           </Grid>
         </Grid>
-
+        <Grid item xs={12}>
+          <SortFilterBatches
+            filterRedeemed={filterRedeemed}
+            selectedSort={selectedSort}
+            selectedFilter={selectedFilter}
+            sortOptions={sortOptions}
+            filterOptions={filterOptions}
+            handleSwitch={handleSwitch}
+            handleSortChange={handleSortChange}
+            handleFilterChange={handleFilterChange}
+          />
+        </Grid>
         {batches.map(batch => (
           // <BatchItem key={batch.batch_id} batch={batch} />
 
