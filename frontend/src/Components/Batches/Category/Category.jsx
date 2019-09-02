@@ -4,6 +4,8 @@ import Link from '@material-ui/core/Link';
 import { Grid, Typography, Tooltip, IconButton } from '@material-ui/core';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import BatchInstance from '../BatchInstance';
+import Select from 'react-select';
+
 import AuthHelperMethods from '../../AuthHelperMethods';
 
 const Auth = new AuthHelperMethods('http://localhost:3001');
@@ -21,11 +23,33 @@ export default function Category(props) {
   // console.log('Category props: ',props);
   const { match } = props;
   const [batches, setBatches] = useState([]);
+  const [selectedOption, setSelectedOption] = useState({
+    label: 'Expire Date Asc',
+    value: { field: 'expiry_date', asc: true },
+  });
+
+  const selectOptions = [
+    { label: 'Start Date Asc', value: { field: 'start_date', asc: true } },
+    { label: 'Start Date Desc', value: { field: 'start_date', asc: false } },
+    { label: 'Expire Date Asc', value: { field: 'expiry_date', asc: true } },
+    { label: 'Expire Date Desc', value: { field: 'expiry_date', asc: false } },
+    { label: 'Business Asc', value: { field: 'business_name', asc: true } },
+    { label: 'Business Desc', value: { field: 'business_name', asc: false } },
+  ];
+
+  const handleSortChange = selectedOption => {
+    setSelectedOption(selectedOption);
+    //console.log(`Option selected:`, selectedOption);
+  };
 
   useEffect(() => {
+    let orderBy = selectedOption.value.field ? selectedOption.value.field : 'expiry_date';
+    let isAsc = selectedOption.value.asc ? selectedOption.value.asc : false;
     Auth.fetch({
       method: 'get',
-      url: `http://localhost:3001/Batches?categoryID=${categories[match.params.categoryName]}`,
+      url: `http://localhost:3001/Batches?categoryID=${
+        categories[match.params.categoryName]
+      }&orderBy='${orderBy}'&isAsc=${isAsc}`,
       data: {},
     }).then(res => {
       if (res && res.batches) {
@@ -35,7 +59,7 @@ export default function Category(props) {
         console.log('There are no available coupons for this category');
       }
     });
-  }, [match.params.categoryName]);
+  }, [match.params.categoryName, selectedOption]);
 
   return (
     <Grid>
@@ -53,7 +77,10 @@ export default function Category(props) {
           </Typography>
         </Grid>
       </Grid>
-
+      <Grid item xs={12}>
+        <Typography variant="subtitle2">Sort by:</Typography>
+        <Select value={selectedOption} onChange={handleSortChange} options={selectOptions}></Select>
+      </Grid>
       {batches.length ? (
         batches.map(batch => {
           return (
