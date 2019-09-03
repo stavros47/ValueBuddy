@@ -23,28 +23,37 @@ export default function Category(props) {
   // console.log('Category props: ',props);
   const { match } = props;
   const [batches, setBatches] = useState([]);
-  const [selectedOption, setSelectedOption] = useState({
-    label: 'Expire Date Asc',
-    value: { field: 'expiry_date', asc: true },
-  });
 
-  const selectOptions = [
-    { label: 'Start Date Asc', value: { field: 'start_date', asc: true } },
-    { label: 'Start Date Desc', value: { field: 'start_date', asc: false } },
-    { label: 'Expire Date Asc', value: { field: 'expiry_date', asc: true } },
-    { label: 'Expire Date Desc', value: { field: 'expiry_date', asc: false } },
-    { label: 'Business Asc', value: { field: 'business_name', asc: true } },
-    { label: 'Business Desc', value: { field: 'business_name', asc: false } },
+  const [selectedSort, setSelectedSort] = useState({
+    label: 'Expire Date',
+    value: 'expiry_date',
+  });
+  const [selectedDir, setSelectedDir] = useState({ label: 'Desc', value: false });
+
+  const sortOptions = [
+    { label: 'Start Date', value: 'start_date' },
+    { label: 'Expire Date', value: 'expiry_date' },
+    { label: 'Business', value: 'business_name' },
   ];
 
+  const dirOptions = [{ label: 'Asc', value: true }, { label: 'Desc', value: false }];
+
   const handleSortChange = selectedOption => {
-    setSelectedOption(selectedOption);
+    setSelectedSort(selectedOption);
+    //console.log(`Option selected:`, selectedOption);
+  };
+
+  const handleDirChange = selectedOption => {
+    setSelectedDir(selectedOption);
     //console.log(`Option selected:`, selectedOption);
   };
 
   useEffect(() => {
-    let orderBy = selectedOption.value.field ? selectedOption.value.field : 'expiry_date';
-    let isAsc = selectedOption.value.asc ? selectedOption.value.asc : false;
+    /*If any select has no value use a default value*/
+    let orderBy = selectedSort ? selectedSort.value : 'expiry_date';
+    let isAsc = selectedDir ? selectedDir.value : false;
+
+    /*Get the coupon batches according to the sort options selected */
     Auth.fetch({
       method: 'get',
       url: `http://localhost:3001/Batches?categoryID=${
@@ -59,10 +68,10 @@ export default function Category(props) {
         console.log('There are no available coupons for this category');
       }
     });
-  }, [match.params.categoryName, selectedOption]);
+  }, [match.params.categoryName, selectedSort, selectedDir]);
 
   return (
-    <Grid>
+    <Grid container spacing={1}>
       <Grid container item>
         <Grid item>
           <Tooltip title="Back">
@@ -76,11 +85,18 @@ export default function Category(props) {
             {match.params.categoryName}
           </Typography>
         </Grid>
+        <Grid container item direction="row" spacing={2}>
+          <Grid item xs={7}>
+            <Typography variant="subtitle2">Sort by:</Typography>
+            <Select value={selectedSort} onChange={handleSortChange} options={sortOptions}></Select>
+          </Grid>
+          <Grid item xs={5}>
+            <Typography variant="subtitle2">Direction:</Typography>
+            <Select value={selectedDir} onChange={handleDirChange} options={dirOptions}></Select>
+          </Grid>
+        </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <Typography variant="subtitle2">Sort by:</Typography>
-        <Select value={selectedOption} onChange={handleSortChange} options={selectOptions}></Select>
-      </Grid>
+
       {batches.length ? (
         batches.map(batch => {
           return (
