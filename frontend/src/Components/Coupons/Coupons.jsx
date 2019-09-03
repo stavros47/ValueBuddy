@@ -1,57 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Grid, Typography } from '@material-ui/core';
-
-// import CouponItem from "./CouponItem";
-import BatchInstance from '../Batches/BatchInstance';
+/*Styled components*/
 import Select from 'react-select';
+import { Grid, Typography } from '@material-ui/core';
+import BatchInstance from '../Batches/BatchInstance';
 
 import AuthHelperMethods from '../AuthHelperMethods';
-
 const Auth = new AuthHelperMethods('http://localhost:3001');
 
 export default function Coupons(props) {
   const [coupons, setCoupons] = useState([]);
   const { match, resourcePath } = props;
+
+  /*Sort & Filters states: */
   const [selectedStatus, setSelectedStatus] = useState({ label: 'Valid', value: 1 });
   const [redeemedOption, setRedeemedOption] = useState({ label: 'No', value: false });
   const [selectedCategory, setSelectedCategory] = useState({ label: 'Food', value: 1 });
   const [selectedSort, setSelectedSort] = useState({
-    label: 'Expiry Date Asc',
-    value: { field: 'expiry_date', asc: true },
+    label: 'Expiry Date',
+    value: 'expiry_date',
   });
+  const [selectedAsc, setSelectedAsc] = useState({ label: 'Desc', value: false });
 
+  /*Available options for sort & filters */
   const statusOptions = [{ label: 'Valid', value: 1 }, { label: 'Expired', value: 2 }];
-
-  const handleStatusChange = selectedOption => {
-    setSelectedStatus(selectedOption);
-    //console.log(`Option selected:`, selectedOption);
-  };
-
   const redeemedOptions = [{ label: 'Yes', value: true }, { label: 'No', value: false }];
-
-  const handleRedeemChange = selectedOption => {
-    setRedeemedOption(selectedOption);
-    //console.log(`Option selected:`, selectedOption);
-  };
-
-  const sortOptions = [
-    { label: 'Start Date Asc', value: { field: 'start_date', asc: true } },
-    { label: 'Start Date Desc', value: { field: 'start_date', asc: false } },
-    { label: 'Expiry Date Asc', value: { field: 'expiry_date', asc: true } },
-    { label: 'Expiry Date Desc', value: { field: 'expiry_date', asc: false } },
-    { label: 'Business Asc', value: { field: 'business_name', asc: true } },
-    { label: 'Business Desc', value: { field: 'business_name', asc: false } },
-    { label: 'Date Used Asc', value: { field: 'date_used', asc: true } },
-    { label: 'Date Used Desc', value: { field: 'date_used', asc: false } },
-  ];
-
-  const handleSortChange = selectedOption => {
-    setSelectedSort(selectedOption);
-    console.log(`Option selected:`, selectedOption);
-  };
-
   const categoryOptions = [
     { label: 'Food', value: 1 },
     { label: 'Clothing', value: 2 },
@@ -60,21 +34,52 @@ export default function Coupons(props) {
     { label: 'Groceries', value: 5 },
     { label: 'Coffee', value: 6 },
   ];
+  const sortOptions = [
+    { label: 'Start Date', value: 'start_date' },
+    { label: 'Expiry Date', value: 'expiry_date' },
+    { label: 'Business', value: 'business_name' },
+    { label: 'Date Used', value: 'date_used' },
+  ];
+  const directionOptions = [{ label: 'Asc', value: true }, { label: 'Desc', value: false }];
+
+  /*Handlers for Filters & Sort changes */
+  const handleStatusChange = selectedOption => {
+    setSelectedStatus(selectedOption);
+    //console.log(`Option selected:`, selectedOption);
+  };
+
+  const handleRedeemChange = selectedOption => {
+    setRedeemedOption(selectedOption);
+    //console.log(`Option selected:`, selectedOption);
+  };
 
   const handleCategoryChange = selectedOption => {
     setSelectedCategory(selectedOption);
     //console.log(`Option selected:`, selectedOption);
   };
 
+  const handleSortChange = selectedOption => {
+    setSelectedSort(selectedOption);
+    //console.log(`Option selected:`, selectedOption);
+  };
+
+  const handleDirectionChange = selectedOption => {
+    setSelectedAsc(selectedOption);
+    //console.log(`dir selected:`, selectedOption.value);
+  };
+
   useEffect(() => {
-    let status = selectedStatus.value ? selectedStatus.value : 1;
-    let redeemed = redeemedOption.value ? redeemedOption.value : false;
-    let category = selectedCategory.value ? selectedCategory.value : '1';
-    let orderBy = selectedSort.value.field ? selectedSort.value.field : 'customer_name';
-    let isAsc = selectedSort.value ? selectedSort.value.asc : true;
+    /*If any filter has no value use a default value*/
+    let status = selectedStatus ? selectedStatus.value : 1;
+    let redeemed = redeemedOption ? redeemedOption.value : false;
+    let category = selectedCategory ? selectedCategory.value : '1';
+    let orderBy = selectedSort ? selectedSort.value : 'customer_name';
+    let isAsc = selectedAsc ? selectedAsc.value : true;
+
+    /*Get the coupons according to the filters and sort selected */
     Auth.fetch({
       method: 'get',
-      url: `http://localhost:3001/${resourcePath}/Coupons?category_id=${selectedCategory.value}&status_id=${status}&sortBy=${orderBy}&redeemed=${redeemed}&isAsc=${isAsc}`,
+      url: `http://localhost:3001/${resourcePath}/Coupons?category_id=${category}&status_id=${status}&sortBy=${orderBy}&redeemed=${redeemed}&isAsc=${isAsc}`,
       data: {},
       validateStatus: function(status) {
         return (status = 404);
@@ -89,13 +94,13 @@ export default function Coupons(props) {
       .catch(e => {
         console.log(e);
       });
-  }, [resourcePath, selectedStatus, redeemedOption, selectedCategory, selectedSort]);
+  }, [resourcePath, selectedStatus, redeemedOption, selectedCategory, selectedSort, selectedAsc]);
 
   return (
     <div>
       <Grid container direction="row" justify="flex-start" alignItems="flex-start">
         <Typography className="section_title" variant="h4">
-          Coupons
+          My Coupons
         </Typography>
         <Grid
           container
@@ -126,9 +131,16 @@ export default function Coupons(props) {
               onChange={handleCategoryChange}
               options={categoryOptions}></Select>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={7}>
             Sort By:
             <Select value={selectedSort} onChange={handleSortChange} options={sortOptions}></Select>
+          </Grid>
+          <Grid item xs={5}>
+            Direction:
+            <Select
+              value={selectedAsc}
+              onChange={handleDirectionChange}
+              options={directionOptions}></Select>
           </Grid>
         </Grid>
         {coupons.map(coupon => (
