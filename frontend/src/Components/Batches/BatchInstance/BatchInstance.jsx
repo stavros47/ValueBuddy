@@ -71,7 +71,7 @@ const availableCoupons = (created, claimed) => {
 };
 
 /*The actual Batch Item*/
-export default function CouponInstance(props) {
+export default function BatchInstance(props) {
   const classes = useStyles();
 
   const {
@@ -104,7 +104,7 @@ export default function CouponInstance(props) {
               }`}</span>
             </Paper>
           </Grid>
-          <Grid xs={6} md={7} item container>
+          <Grid xs={5} md={7} item container>
             <Grid item xs={12}>
               <Typography variant="h5" className={classes.descr}>
                 {description}
@@ -117,7 +117,7 @@ export default function CouponInstance(props) {
               </Typography>
             </Grid>
           </Grid>
-          <Grid xs={3} md={2} item container>
+          <Grid xs={4} md={2} item container>
             <Grid item>
               <Typography variant="caption" color="textSecondary" className={classes.expiry}>
                 {`${
