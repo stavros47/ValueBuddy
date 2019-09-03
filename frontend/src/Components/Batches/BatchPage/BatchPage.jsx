@@ -18,6 +18,7 @@ import {
 import { green } from '@material-ui/core/colors';
 import { CardGiftcard, Place, ArrowBack, CheckCircle, Close } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
+import { parseISO, format } from 'date-fns';
 
 import SortFilter from './SortFilter';
 import ExpireDate from './ExpireDate';
@@ -80,7 +81,7 @@ export default function BatchPage(props) {
         .catch(e => console.log(e));
     } else if (currentUser.role === 'business') {
       let orderBy = selectedOption.value.field ? selectedOption.value.field : 'customer_name';
-      let isAsc = selectedOption.value.asc ? selectedOption.value.asc : true;
+      let isAsc = selectedOption.value ? selectedOption.value.asc : true;
       Auth.fetch({
         method: 'get',
         url: `http://localhost:3001/${resourcePath}/Batches/${match.params.batchID}?orderBy='${orderBy}'&isAsc=${isAsc}`,
@@ -185,15 +186,52 @@ export default function BatchPage(props) {
                 handleSwitch={handleSwitch}
               />
             </Grid>
-            <Grid item xs={2} md={1}></Grid>
-            <Grid container item xs={10} md={11} style={{ marginTop: '10px' }}>
+
+            <Grid container item xs={12} md={11} spacing={1} style={{ marginTop: '10px' }}>
               {batchCoupons.map(coupon => {
                 if (filterRedeemed === coupon.is_redeemed) {
                   return (
                     <Grid item xs={12} key={coupon.coupon_id}>
                       <Paper
-                        style={{ border: '1px solid green', marginTop: '4px', padding: '8px' }}>
-                        <Typography variant="subtitle2">{coupon.customer_name}</Typography>
+                        style={{
+                          border: '1px solid',
+                          borderColor: coupon.is_redeemed ? 'green' : 'orange',
+                          marginTop: '4px',
+                          padding: '8px',
+                        }}>
+                        <Grid container direction="row">
+                          <Grid item xs={7}>
+                            <Typography variant="body1">{coupon.customer_name}</Typography>
+                          </Grid>
+                          <Grid item xs={5}>
+                            {coupon.purchased_item && (
+                              <Typography variant="subtitle2">{coupon.purchased_item}</Typography>
+                            )}
+                          </Grid>
+
+                          <Grid container item xs={12}>
+                            <Grid item xs={7}>
+                              {coupon.date_claimed && (
+                                <React.Fragment>
+                                  <Typography variant="overline">Claimed:</Typography>
+                                  <Typography variant="body2">
+                                    {format(parseISO(coupon.date_claimed), 'EEE, MMM dd yyyy')}
+                                  </Typography>
+                                </React.Fragment>
+                              )}
+                            </Grid>
+                            <Grid item xs={5}>
+                              {coupon.date_used && (
+                                <React.Fragment>
+                                  <Typography variant="overline">Redeemed:</Typography>
+                                  <Typography variant="body2">
+                                    {format(parseISO(coupon.date_used), 'EEE, MMM dd yyyy')}
+                                  </Typography>
+                                </React.Fragment>
+                              )}
+                            </Grid>
+                          </Grid>
+                        </Grid>
                       </Paper>
                     </Grid>
                   );
