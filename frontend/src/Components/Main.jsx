@@ -16,6 +16,7 @@ import BrowseBatches from './Batches/BrowseBatches';
 import Category from './Batches/Category';
 import BatchPage from './Batches/BatchPage';
 import Redeem from './Redeem';
+import Dashboard from './Dashboard';
 
 import AuthHelperMethods from './AuthHelperMethods';
 
@@ -61,7 +62,7 @@ const useStyles = makeStyles(theme => ({
   toolbar: theme.mixins.toolbar,
 }));
 
-function Dashboard(props) {
+function Main(props) {
   const classes = useStyles();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [resourcePath, setResourcePath] = useState('');
@@ -195,6 +196,7 @@ function Dashboard(props) {
       <div className={classes.root}>
         <CssBaseline />
         <MenuAppBar handleLogout={props.handleLogout} handleDrawerToggle={handleDrawerToggle} />
+
         <Drawer
           open={drawerOpen}
           onClose={handleDrawerToggle}
@@ -253,6 +255,13 @@ function Dashboard(props) {
             <>
               <PrivateRoute
                 exact
+                path="/"
+                component={Dashboard}
+                resourcePath={resourcePath}
+                currentUser={currentUser}
+              />
+              <PrivateRoute
+                exact
                 path="/Templates"
                 component={Templates}
                 resourcePath={resourcePath}
@@ -291,4 +300,4 @@ function Dashboard(props) {
   );
 }
 
-export default Dashboard;
+export default Main;
