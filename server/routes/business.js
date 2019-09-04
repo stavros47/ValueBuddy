@@ -136,13 +136,19 @@ router.put('/:id', authorize(Role.Business), function(req, res, next) {
 /* GET all Batches of a specific business. */
 router.get('/:id/Batches', authorize(), function(req, res, next) {
   //all authorized users
-  database.raw(`SELECT * FROM get_business_batches(${parseInt(req.params.id)})`).then(data => {
-    if (data.rows === undefined || data.rows.length == 0) {
-      res.status(404).json({ message: 'No Coupon batches!', batches: [] });
-    } else {
-      res.status(200).json({ batches: data.rows });
-    }
-  });
+  database
+    .raw(
+      `SELECT * FROM get_ordered_business_batches(${parseInt(req.params.id)},'${
+        req.query.status
+      }','${req.query.type}','${req.query.sortBy}',${req.query.isAsc})`
+    )
+    .then(data => {
+      if (data.rows === undefined || data.rows.length == 0) {
+        res.status(404).json({ message: 'No Coupon batches!', batches: [] });
+      } else {
+        res.status(200).json({ batches: data.rows });
+      }
+    });
 });
 
 /* GET all batches made from a specific template, of a specific business. */
