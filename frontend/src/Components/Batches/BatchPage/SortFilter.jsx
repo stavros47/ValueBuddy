@@ -5,11 +5,25 @@ import { Grid, Switch } from '@material-ui/core';
 
 export default function SortFilter(props) {
   return (
-    <Grid container item spacing={3}>
+    <Grid container item spacing={0}>
       <Grid item xs={6}>
+        Sort By:
+        <Select
+          value={props.selectedSort}
+          onChange={props.handleSortChange}
+          options={props.sortOptions}></Select>
+      </Grid>
+      <Grid item xs={6}>
+        Direction:
+        <Select
+          value={props.selectedAsc}
+          onChange={props.handleDirectionChange}
+          options={props.directionOptions}></Select>
+      </Grid>
+      <Grid item xs={5}>
         <FormControlLabel
           size="small"
-          labelPlacement="start"
+          labelPlacement="end"
           control={
             <Switch
               checked={props.filterRedeemed}
@@ -21,12 +35,6 @@ export default function SortFilter(props) {
           label="Redeemed"
           style={{ fontSize: '0.5em' }}
         />
-      </Grid>
-      <Grid item xs={6}>
-        <Select
-          value={props.selectedOption}
-          onChange={props.handleSortChange}
-          options={props.options}></Select>
       </Grid>
     </Grid>
   );
