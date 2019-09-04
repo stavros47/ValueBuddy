@@ -8,6 +8,7 @@ require('dotenv').config();
 /* Include the express framework and invoke it*/
 const express = require('express');
 const app = express();
+app.disable('x-powered-by');
 
 // const whitelist = ['http://localhost:3000', 'http://localhost:3001']
 // const corsOptions = {
