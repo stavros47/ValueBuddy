@@ -33,22 +33,29 @@ export default function BatchPage(props) {
   const [batchCoupons, setBatchCoupons] = useState([]);
   const [isClaimed, setIsClaimed] = useState(props.isClaimed || false);
   const [openSuccess, setOpenSuccess] = React.useState(false);
-  const [selectedOption, setSelectedOption] = useState({
-    label: 'Customer Name ASC',
-    value: { field: 'customer_name', asc: true },
+
+  const [selectedSort, setSelectedSort] = useState({
+    label: 'Customer Name',
+    value: 'customer_name',
   });
   const [filterRedeemed, setFilterRedeemed] = useState(false);
+  const [selectedAsc, setSelectedAsc] = useState({ label: 'Desc', value: false });
 
-  const selectOptions = [
-    { label: 'Customer Name ASC', value: { field: 'customer_name', asc: true } },
-    { label: 'Customer Name DESC', value: { field: 'customer_name', asc: false } },
-    { label: 'Date used ASC', value: { field: 'date_used', asc: true } },
-    { label: 'Date used DESC', value: { field: 'date_used', asc: false } },
+  const sortOptions = [
+    { label: 'Customer Name', value: 'customer_name' },
+    { label: 'Date Claimed', value: 'date_claimed' },
+    { label: 'Date Used', value: 'date_used' },
   ];
+  const directionOptions = [{ label: 'Asc', value: true }, { label: 'Desc', value: false }];
 
   const handleSortChange = selectedOption => {
-    setSelectedOption(selectedOption);
+    setSelectedSort(selectedOption);
     console.log(`Option selected:`, selectedOption);
+  };
+
+  const handleDirectionChange = selectedOption => {
+    setSelectedAsc(selectedOption);
+    //console.log(`dir selected:`, selectedOption.value);
   };
 
   const handleSwitch = name => event => {
@@ -80,8 +87,8 @@ export default function BatchPage(props) {
         })
         .catch(e => console.log(e));
     } else if (currentUser.role === 'business') {
-      let orderBy = selectedOption.value.field ? selectedOption.value.field : 'customer_name';
-      let isAsc = selectedOption.value ? selectedOption.value.asc : true;
+      let orderBy = selectedSort ? selectedSort.value : 'customer_name';
+      let isAsc = selectedAsc ? selectedAsc.value : true;
       Auth.fetch({
         method: 'get',
         url: `http://localhost:3001/${resourcePath}/Batches/${match.params.batchID}?orderBy='${orderBy}'&isAsc=${isAsc}`,
@@ -98,7 +105,7 @@ export default function BatchPage(props) {
         })
         .catch(e => console.log(e));
     }
-  }, [match.params.batchID, currentUser.role, resourcePath, selectedOption]);
+  }, [match.params.batchID, currentUser.role, resourcePath, selectedSort, selectedAsc]);
 
   const handleClaim = () => {
     Auth.fetch({
@@ -179,9 +186,12 @@ export default function BatchPage(props) {
           <>
             <Grid item xs={12} md={4}>
               <SortFilter
-                selectedOption={selectedOption}
-                options={selectOptions}
+                selectedSort={selectedSort}
+                sortOptions={sortOptions}
                 handleSortChange={handleSortChange}
+                selectedAsc={selectedAsc}
+                directionOptions={directionOptions}
+                handleDirectionChange={handleDirectionChange}
                 filterRedeemed={filterRedeemed}
                 handleSwitch={handleSwitch}
               />
