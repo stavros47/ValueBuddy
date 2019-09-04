@@ -33,46 +33,51 @@ export default function Batches(props) {
   const [batches, setBatches] = useState([]);
   const [open, setOpen] = React.useState(false);
 
-  const [selectedFilter, setSelectedFilter] = useState();
-  const [selectedSort, setSelectedSort] = useState();
-  const [filterRedeemed, setFilterRedeemed] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState({ label: 'All', value: '3' });
+  const [selectedType, setSelectedType] = useState({ label: 'All', value: 'All' });
+  const [selectedSort, setSelectedSort] = useState({ label: 'Expiry date', value: 'expiry_date' });
+  const [sortDirection, setSortDirection] = useState({ label: 'Desc', value: false });
 
   const sortOptions = [
-    { label: 'Expired Asc', value: { field: 'expiry_date', asc: true } },
-    { label: 'Expired Desc', value: { field: 'expiry_date', asc: false } },
-    { label: 'Started Asc', value: { field: 'start_date', asc: true } },
-    { label: 'Started Desc', value: { field: 'start_date', asc: false } },
-    { label: 'Created # Asc', value: { field: 'created_count', asc: true } },
-    { label: 'Created # Desc', value: { field: 'created_count', asc: false } },
-    { label: 'Claimed # Asc', value: { field: 'claimed_count', asc: true } },
-    { label: 'Claimed # Desc', value: { field: 'claimed_count', asc: false } },
-    { label: 'Redeemed # Asc', value: { field: 'redeemed_count', asc: true } },
-    { label: 'Redeemed # Desc', value: { field: 'redeemed_count', asc: false } },
+    { label: 'Start date', value: 'start_date' },
+    { label: 'Expiry date', value: 'expiry_date' },
+    { label: 'Created Count', value: 'created_count' },
+    { label: 'Claimed Count', value: 'claimed_count' },
+    { label: 'Redeemed Count', value: 'redeemed_count' },
   ];
 
-  const filterOptions = [
-    {
-      label: 'Status',
-      options: [{ label: 'Active', value: '1' }, { label: 'Expired', value: '2' }],
-    },
-    {
-      label: 'Discount Type',
-      options: [{ label: 'Percentage', value: 'Percentage' }, { label: 'Flat', value: 'Flat' }],
-    },
+  const dirOptions = [{ label: 'Asc', value: true }, { label: 'Desc', value: false }];
+
+  const statusOptions = [
+    { label: 'Active', value: 'Active' },
+    { label: 'Expired', value: 'Expired' },
+    { label: 'All', value: 'All' },
+  ];
+
+  const typeOptions = [
+    { label: 'All', value: 'All' },
+    { label: 'Percentage', value: 'Percentage' },
+    { label: 'Flat', value: 'Flat' },
   ];
 
   const handleSortChange = selectedOption => {
     setSelectedSort(selectedOption);
-    console.log(`Sort selected:`, selectedOption);
+    //console.log(`Sort selected:`, selectedOption);
   };
 
-  const handleFilterChange = selectedOption => {
-    setSelectedFilter(selectedOption);
-    console.log(`Filter selected:`, selectedOption);
+  const handleSortDirChange = selectedOption => {
+    setSortDirection(selectedOption);
+    //console.log(`direction selected:`, selectedOption);
   };
 
-  const handleSwitch = name => event => {
-    setFilterRedeemed(event.target.checked);
+  const handleStatusChange = selectedOption => {
+    setSelectedStatus(selectedOption);
+    //console.log(`Status selected:`, selectedOption);
+  };
+
+  const handleTypeChange = selectedOption => {
+    setSelectedType(selectedOption);
+    //console.log(`Type selected:`, selectedOption);
   };
 
   function handleClickOpen() {
@@ -94,6 +99,10 @@ export default function Batches(props) {
       expiry_date: new Date().toISOString().substring(0, 10),
       status_id: '',
     };
+  };
+
+  const resetState = () => {
+    setNewBatch(getInitialState);
   };
 
   const [newBatch, setNewBatch] = useState(getInitialState);
@@ -125,14 +134,10 @@ export default function Batches(props) {
     resetState();
   };
 
-  const resetState = () => {
-    setNewBatch(getInitialState);
-  };
-
   useEffect(() => {
     Auth.fetch({
       method: 'get',
-      url: `http://localhost:3001/${resourcePath}/Batches`,
+      url: `http://localhost:3001/${resourcePath}/Batches?sortBy=${selectedSort.value}&isAsc=${sortDirection.value}&status=${selectedStatus.value}&type=${selectedType.value}`,
       data: {},
     }).then(res => {
       console.log(res.batches);
@@ -140,7 +145,7 @@ export default function Batches(props) {
         setBatches(res.batches);
       }
     });
-  }, [resourcePath]);
+  }, [resourcePath, selectedSort, sortDirection, selectedStatus, selectedType]);
 
   return (
     <div>
@@ -176,14 +181,18 @@ export default function Batches(props) {
         </Grid>
         <Grid item xs={12}>
           <SortFilterBatches
-            filterRedeemed={filterRedeemed}
             selectedSort={selectedSort}
-            selectedFilter={selectedFilter}
             sortOptions={sortOptions}
-            filterOptions={filterOptions}
-            handleSwitch={handleSwitch}
             handleSortChange={handleSortChange}
-            handleFilterChange={handleFilterChange}
+            sortDirection={sortDirection}
+            dirOptions={dirOptions}
+            handleSortDirChange={handleSortDirChange}
+            selectedType={selectedType}
+            typeOptions={typeOptions}
+            handleTypeChange={handleTypeChange}
+            selectedStatus={selectedStatus}
+            statusOptions={statusOptions}
+            handleStatusChange={handleStatusChange}
           />
         </Grid>
         {batches.map(batch => (
