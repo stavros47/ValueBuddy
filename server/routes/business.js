@@ -26,16 +26,52 @@ router.get('/', authorize(), function(req, res, next) {
 /* GET a Business */
 router.get('/:id', authorize(), function(req, res, next) {
   //all authorized users
-  // database.raw(`SELECT * FROM get_business(${parseInt(req.params.id)})`)
-  businessByID(parseInt(req.params.id))
-    .then(data => {
-      if (data.rows === undefined || data.rows.length == 0) {
+
+  if (req.user.role === 'customer') {
+    businessByID(parseInt(req.params.id))
+      .then(business => {
+        if (business.rows !== undefined && business.rows.length != 0) {
+          res.status(200).json({ business: business.rows[0] });
+        }
         res.status(404).json({ message: 'Business not Found!', business: {} });
-      } else {
-        res.status(200).json({ business: data.rows[0] });
-      }
-    })
-    .catch(e => console.log(e));
+      })
+      .catch(e => console.log(e));
+  } else if (req.user.role === 'business') {
+    const response = {};
+    businessByID(parseInt(req.params.id))
+      .then(business => {
+        if (business.rows !== undefined && business.rows.length != 0) {
+          response.business = business.rows[0];
+          return database.raw(`SELECT * FROM get_batches_per_month(${parseInt(req.params.id)})`);
+        }
+        res.status(404).json({ message: 'Business not Found!', business: {} });
+      })
+      .then(batchData => {
+        if (batchData && batchData.rows !== undefined) {
+          response.batch_data = batchData.rows;
+        } else {
+          response.batch_data = [];
+        }
+        return database.raw(`SELECT * FROM get_coupons_per_month(${parseInt(req.params.id)})`);
+      })
+      .then(couponData => {
+        if (couponData && couponData.rows !== undefined) {
+          response.coupon_data = couponData.rows;
+        } else {
+          response.coupon_data = [];
+        }
+        return database.raw(`SELECT * FROM get_total_customers(${parseInt(req.params.id)})`);
+      })
+      .then(total => {
+        if (total && total.rows !== undefined) {
+          response.total_customers = total.rows[0].get_total_customers;
+        } else {
+          response.total_customers = 0;
+        }
+        res.status(200).json(response);
+      })
+      .catch(e => console.log(e));
+  }
 });
 
 /* Delete a Business */
