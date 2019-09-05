@@ -67,6 +67,9 @@ function Main(props) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [resourcePath, setResourcePath] = useState('');
   const [currentUser, setCurrentUser] = useState({});
+  const [batchData, setBatchData] = useState([]);
+  const [couponData, setCouponData] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
   const [templates, setTemplates] = useState([]);
 
   const { role, role_id } = props.user;
@@ -112,6 +115,15 @@ function Main(props) {
               ...res.business,
               ...props.user,
             });
+            if (res.batch_data) {
+              setBatchData(res.batch_data);
+            }
+            if (res.coupon_data) {
+              setCouponData(res.coupon_data);
+            }
+            if (res.total_customers) {
+              setTotalUsers(res.total_customers);
+            }
           }
         }
       })
@@ -259,6 +271,9 @@ function Main(props) {
                 component={Dashboard}
                 resourcePath={resourcePath}
                 currentUser={currentUser}
+                batchData={batchData}
+                couponData={couponData}
+                total={totalUsers}
               />
               <PrivateRoute
                 exact

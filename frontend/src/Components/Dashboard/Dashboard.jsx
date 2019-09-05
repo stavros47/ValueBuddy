@@ -1,56 +1,32 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
-// Budget,
-//   TasksProgress,
-//   TotalProfit,
-//   LatestSales,
-//   UsersByDevice,
-//   LatestProducts,
-//   LatestOrders,
-import TotalUsers from './Components/TotalUsers';
-import LatestSales from './Components/LatestSales';
+
+import { TotalUsers, CouponActivity, BatchActivity } from './Components';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    padding: theme.spacing(1),
+    padding: theme.spacing(0),
+    margin: '0',
+    width: '100%',
   },
 }));
 
-const Dashboard = () => {
+const Dashboard = props => {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
-      <Grid container spacing={1}>
-        {/* <Grid item lg={3} sm={6} xl={3} xs={12}>
-          <Budget />
-        </Grid> */}
-        <Grid item md={6} xs={12}>
-          <TotalUsers />
+      <Grid container direction="row" justify="space-between" alignItems="center" spacing={1}>
+        <Grid item xs={12} md={4}>
+          <TotalUsers total={props.total} />
         </Grid>
-        <Grid item md={6} xs={12}>
-          <TotalUsers />
+        <Grid item xs={12} md={8}>
+          <CouponActivity couponData={props.couponData} />
         </Grid>
-        <Grid item lg={8} md={12} xl={9} xs={12}>
-          <LatestSales />
+        <Grid item xs={12} md={8}>
+          <BatchActivity batchData={props.batchData} />
         </Grid>
-        {/* <Grid item lg={3} sm={6} xl={3} xs={12}>
-          <TasksProgress />
-        </Grid>
-        <Grid item lg={3} sm={6} xl={3} xs={12}>
-          <TotalProfit />
-        </Grid>
-        
-        <Grid item lg={4} md={6} xl={3} xs={12}>
-          <UsersByDevice />
-        </Grid>
-        <Grid item lg={4} md={6} xl={3} xs={12}>
-          <LatestProducts />
-        </Grid>
-        <Grid item lg={8} md={12} xl={9} xs={12}>
-          <LatestOrders />
-        </Grid> */}
       </Grid>
     </div>
   );
