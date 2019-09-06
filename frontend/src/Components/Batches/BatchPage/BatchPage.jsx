@@ -214,28 +214,33 @@ export default function BatchPage(props) {
                             <Typography variant="body1">{coupon.customer_name}</Typography>
                           </Grid>
                           <Grid item xs={5}>
-                            {coupon.purchased_item && (
-                              <Typography variant="subtitle2">{coupon.purchased_item}</Typography>
+                            {coupon.date_claimed && (
+                              <React.Fragment>
+                                <Typography variant="overline">Claimed:</Typography>
+                                <Typography variant="body2">
+                                  {format(parseISO(coupon.date_claimed), 'EEE, MMM dd yyyy')}
+                                </Typography>
+                              </React.Fragment>
                             )}
                           </Grid>
 
                           <Grid container item xs={12}>
                             <Grid item xs={7}>
-                              {coupon.date_claimed && (
-                                <React.Fragment>
-                                  <Typography variant="overline">Claimed:</Typography>
-                                  <Typography variant="body2">
-                                    {format(parseISO(coupon.date_claimed), 'EEE, MMM dd yyyy')}
-                                  </Typography>
-                                </React.Fragment>
-                              )}
-                            </Grid>
-                            <Grid item xs={5}>
                               {coupon.date_used && (
                                 <React.Fragment>
                                   <Typography variant="overline">Redeemed:</Typography>
                                   <Typography variant="body2">
                                     {format(parseISO(coupon.date_used), 'EEE, MMM dd yyyy')}
+                                  </Typography>
+                                </React.Fragment>
+                              )}
+                            </Grid>
+                            <Grid item xs={5}>
+                              {coupon.purchased_item && (
+                                <React.Fragment>
+                                  <Typography variant="overline">Discounted Item:</Typography>
+                                  <Typography variant="subtitle2">
+                                    {coupon.purchased_item}
                                   </Typography>
                                 </React.Fragment>
                               )}
