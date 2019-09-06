@@ -11,6 +11,7 @@ import PagesIcon from '@material-ui/icons/Pages';
 import Receipt from '@material-ui/icons/Receipt';
 import AccountBalanceWallet from '@material-ui/icons/AccountBalanceWallet';
 import WhatsHot from '@material-ui/icons/Whatshot';
+import SupervisorAccount from '@material-ui/icons/SupervisorAccount';
 
 const drawerItems = {
   customer: [
@@ -28,6 +29,11 @@ const drawerItems = {
       name: 'My Coupons',
       href: '/Coupons',
       icon: <AccountBalanceWallet />,
+    },
+    {
+      name: 'Profile',
+      href: '/profile',
+      icon: <SupervisorAccount />,
     },
   ],
   business: [
@@ -50,6 +56,11 @@ const drawerItems = {
       name: 'Redeem',
       href: '/Redeem',
       icon: <ShoppingBasketIcon />,
+    },
+    {
+      name: 'Profile',
+      href: '/profile',
+      icon: <SupervisorAccount />,
     },
   ],
 };

@@ -17,6 +17,7 @@ import Category from './Batches/Category';
 import BatchPage from './Batches/BatchPage';
 import Redeem from './Redeem';
 import { CustomerDashboard, BusinessDashboard } from './Dashboard';
+import { UserProfile } from './UserProfile';
 
 import AuthHelperMethods from './AuthHelperMethods';
 
@@ -281,6 +282,13 @@ function Main(props) {
                 exact
                 path="/Coupons/:couponID"
                 component={CouponPage}
+                resourcePath={resourcePath}
+                currentUser={currentUser}
+              />
+              <PrivateRoute
+                exact
+                path="/profile"
+                component={UserProfile}
                 resourcePath={resourcePath}
                 currentUser={currentUser}
               />
