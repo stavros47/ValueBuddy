@@ -21,13 +21,58 @@ router.get('/', authorize(Role.Admin), function(req, res, next) {
 /* GET a Customer */
 router.get('/:id', authorize(), function(req, res, next) {
   //All authorized users
-  database.raw(`SELECT * FROM get_customer(${parseInt(req.params.id)})`).then(data => {
-    if (data.rows === undefined || data.rows.length == 0) {
-      res.status(404).json({ message: 'Customer not Found!', customer: {} });
-    } else {
-      res.status(200).json({ customer: data.rows[0] });
-    }
-  });
+  if (req.user.role === 'business') {
+    database.raw(`SELECT * FROM get_customer(${parseInt(req.params.id)})`).then(data => {
+      if (data.rows === undefined || data.rows.length == 0) {
+        res.status(404).json({ message: 'Customer not Found!', customer: {} });
+      } else {
+        res.status(200).json({ customer: data.rows[0] });
+      }
+    });
+  } else if (req.user.role === 'customer' && req.user.role_id === parseInt(req.params.id)) {
+    const response = {};
+    database
+      .raw(`SELECT * FROM get_customer(${parseInt(req.params.id)})`)
+      .then(data => {
+        if (data.rows !== undefined && data.rows.length != 0) {
+          response.customer = data.rows[0];
+          return database.raw(
+            `SELECT * FROM get_customer_coupons_monthly(${parseInt(req.params.id)})`
+          );
+        }
+        res.status(404).json({
+          message: 'Customer not Found!',
+          customer: {},
+          monthly: [],
+          expiring: [],
+          favorites: [],
+        });
+      })
+      .then(monthly => {
+        if (monthly.rows !== undefined && monthly.rows.length != 0) {
+          response.monthly = monthly.rows;
+        } else {
+          response.monthly = [];
+        }
+        return database.raw(`SELECT * FROM get_customer_favourites(${parseInt(req.params.id)})`);
+      })
+      .then(favorites => {
+        if (favorites.rows !== undefined && favorites.rows.length != 0) {
+          response.favorites = favorites.rows;
+        } else {
+          response.favorites = [];
+        }
+        return database.raw(`SELECT * FROM get_customer_expiring(${parseInt(req.params.id)})`);
+      })
+      .then(expiring => {
+        if (expiring.rows !== undefined && expiring.rows.length != 0) {
+          response.expiring = expiring.rows;
+        } else {
+          response.expiring = [];
+        }
+        res.status(200).json(response);
+      });
+  }
 });
 
 /* Delete a Customer */
