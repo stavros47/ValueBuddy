@@ -16,7 +16,7 @@ import BrowseBatches from './Batches/BrowseBatches';
 import Category from './Batches/Category';
 import BatchPage from './Batches/BatchPage';
 import Redeem from './Redeem';
-import Dashboard from './Dashboard';
+import { CustomerDashboard, BusinessDashboard } from './Dashboard';
 
 import AuthHelperMethods from './AuthHelperMethods';
 
@@ -67,10 +67,15 @@ function Main(props) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [resourcePath, setResourcePath] = useState('');
   const [currentUser, setCurrentUser] = useState({});
+  /*Business specific state */
   const [batchData, setBatchData] = useState([]);
   const [couponData, setCouponData] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [templates, setTemplates] = useState([]);
+  /*Customer specific State */
+  const [customerFavorites, setCustomerFavorites] = useState([]);
+  const [customerExpiring, setCustomerExpiring] = useState([]);
+  const [customerMonthly, setCustomerMonthly] = useState([]);
 
   const { role, role_id } = props.user;
 
@@ -110,6 +115,15 @@ function Main(props) {
               ...res.customer,
               ...props.user,
             });
+            if (res.monthly) {
+              setCustomerMonthly(res.monthly);
+            }
+            if (res.expiring) {
+              setCustomerExpiring(res.expiring);
+            }
+            if (res.favorites) {
+              setCustomerFavorites(res.favorites);
+            }
           } else if (role === 'business') {
             setCurrentUser({
               ...res.business,
@@ -228,6 +242,16 @@ function Main(props) {
             <>
               <PrivateRoute
                 exact
+                path="/"
+                component={CustomerDashboard}
+                resourcePath={resourcePath}
+                currentUser={currentUser}
+                favorites={customerFavorites}
+                expiring={customerExpiring}
+                monthly={customerMonthly}
+              />
+              <PrivateRoute
+                exact
                 path="/Discover"
                 component={BrowseBatches}
                 resourcePath={resourcePath}
@@ -268,7 +292,7 @@ function Main(props) {
               <PrivateRoute
                 exact
                 path="/"
-                component={Dashboard}
+                component={BusinessDashboard}
                 resourcePath={resourcePath}
                 currentUser={currentUser}
                 batchData={batchData}
