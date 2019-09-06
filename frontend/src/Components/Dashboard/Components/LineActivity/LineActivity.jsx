@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Card, CardHeader, CardContent } from '@material-ui/core';
 import { Line } from 'react-chartjs-2';
-import palette from '../../../../theme/pallete';
+
 const useStyles = makeStyles({
   card: {
     minWidth: 275,
@@ -37,20 +37,9 @@ const options = {
 
 export default function BatchActivity(props) {
   const classes = useStyles();
-  const { batchData } = props;
-
-  const getArrays = objectArray => {
-    let results = { months: [], created: [], claimed: [], redeemed: [] };
-    objectArray.forEach(element => {
-      results.months.push(element.month_created);
-      results.created.push(element.batch_count);
-    });
-    return results;
-  };
-  let dataResults = getArrays(batchData);
 
   const data = {
-    labels: batchData.length && dataResults.months.reverse(),
+    labels: props.labels,
     datasets: [
       {
         label: 'Batches Created',
@@ -71,7 +60,7 @@ export default function BatchActivity(props) {
         pointHoverBorderWidth: 2,
         pointRadius: 1,
         pointHitRadius: 10,
-        data: batchData.length && dataResults.created.reverse(),
+        data: props.data,
       },
     ],
   };
@@ -79,7 +68,7 @@ export default function BatchActivity(props) {
     <Card className={classes.card} raised>
       <CardHeader title="New Batch Activity" subheader="Created batches per month" />
       <CardContent>
-        <Line data={data} />
+        <Line data={data} options={options} />
       </CardContent>
     </Card>
   );
