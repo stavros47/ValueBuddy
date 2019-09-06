@@ -39,6 +39,7 @@ export default function Batches(props) {
   const [sortDirection, setSortDirection] = useState({ label: 'Desc', value: false });
 
   const sortOptions = [
+    { label: 'Date Created', value: 'date_created' },
     { label: 'Start date', value: 'start_date' },
     { label: 'Expiry date', value: 'expiry_date' },
     { label: 'Created Count', value: 'created_count' },
