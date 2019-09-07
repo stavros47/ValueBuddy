@@ -112,7 +112,11 @@ code {
   max-width: 345;
   margin: 10px 10%;
 }
-
+.couponList {
+  /* position: absolute; */
+  overflow-y: scroll;
+  height: 420px;
+}
 .section_title {
   text-align: left;
   display: block;
