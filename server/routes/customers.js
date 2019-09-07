@@ -100,9 +100,9 @@ router.get('/:id/Coupons', authorize([Role.Customer, Role.Admin]), (req, res, ne
   //Customer with :id & admins
   database
     .raw(
-      `SELECT * FROM get_ordered_customer_coupons(${parseInt(req.params.id)},${
-        req.query.category_id
-      },${req.query.status_id},'${req.query.sortBy}',${req.query.redeemed},${req.query.isAsc})`
+      `SELECT * FROM get_ordered_customer_coupons(${parseInt(req.params.id)},${parseInt(
+        req.query.status_id
+      )},'${req.query.category}','${req.query.sortBy}','${req.query.redeemed}',${req.query.isAsc})`
     )
     .then(data => {
       if (data.rows === undefined || data.rows.length == 0) {
