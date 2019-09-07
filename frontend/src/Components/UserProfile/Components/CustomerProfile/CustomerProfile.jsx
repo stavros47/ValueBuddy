@@ -1,7 +1,8 @@
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-import { Card, CardContent, Avatar, Typography, Divider } from '@material-ui/core';
+import { Grid, Card, CardContent, Avatar, Typography, Divider } from '@material-ui/core';
+import { Email, Phone } from '@material-ui/icons';
 import { parseISO, format } from 'date-fns';
 
 const useStyles = makeStyles(theme => ({
@@ -72,6 +73,37 @@ const CustomerProfile = props => {
               </Typography>
             </>
           )}
+          <Divider variant="fullWidth" style={{ marginBottom: '10px' }} />
+          <Grid container spacing={1}>
+            {currentUser.email && (
+              <>
+                <Grid container item xs={12}>
+                  <Grid item xs={2}>
+                    <Email />
+                  </Grid>
+                  <Grid item xs={10}>
+                    <Typography color="textSecondary" variant="body1">
+                      {currentUser.email}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </>
+            )}
+            {currentUser.phone && (
+              <>
+                <Grid container item xs={12}>
+                  <Grid item xs={2}>
+                    <Phone />
+                  </Grid>
+                  <Grid item xs={10}>
+                    <Typography color="textSecondary" variant="body1">
+                      {currentUser.phone}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </>
+            )}
+          </Grid>
         </div>
       </div>
     </Card>
