@@ -23,7 +23,7 @@ import AuthHelperMethods from './AuthHelperMethods';
 
 const Auth = new AuthHelperMethods('http://localhost:3001');
 
-const drawerWidth = 240;
+const drawerWidth = 340;
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -290,6 +290,7 @@ function Main(props) {
                 path="/profile"
                 component={UserProfile}
                 resourcePath={resourcePath}
+                user={props.user}
                 currentUser={currentUser}
               />
             </>
@@ -337,6 +338,14 @@ function Main(props) {
                 path="/Redeem"
                 component={Redeem}
                 resourcePath={resourcePath}
+                currentUser={currentUser}
+              />
+              <PrivateRoute
+                exact
+                path="/profile"
+                component={UserProfile}
+                resourcePath={resourcePath}
+                user={props.user}
                 currentUser={currentUser}
               />
             </>
