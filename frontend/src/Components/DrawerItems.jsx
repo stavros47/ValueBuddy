@@ -73,7 +73,7 @@ export default function DrawerItems(props) {
         <RouterLink to={sidebarItem.href} key={sidebarItem.href}>
           <ListItem button onClick={props.handleDrawerToggle}>
             <ListItemIcon>{sidebarItem.icon}</ListItemIcon>
-            <ListItemText primary={sidebarItem.name} />
+            <ListItemText primaryTypographyProps={{ variant: 'h6' }} primary={sidebarItem.name} />
           </ListItem>
         </RouterLink>
       ))}
