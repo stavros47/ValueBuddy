@@ -14,9 +14,9 @@ export default function Coupons(props) {
   const { match, resourcePath } = props;
 
   /*Sort & Filters states: */
-  const [selectedStatus, setSelectedStatus] = useState({ label: 'Valid', value: 1 });
-  const [redeemedOption, setRedeemedOption] = useState({ label: 'No', value: false });
-  const [selectedCategory, setSelectedCategory] = useState({ label: 'Food', value: 1 });
+  const [selectedStatus, setSelectedStatus] = useState({ label: 'All', value: 4 });
+  const [redeemedOption, setRedeemedOption] = useState({ label: 'All', value: 'All' });
+  const [selectedCategory, setSelectedCategory] = useState({ label: 'All', value: 'All' });
   const [selectedSort, setSelectedSort] = useState({
     label: 'Expiry Date',
     value: 'expiry_date',
@@ -24,20 +24,30 @@ export default function Coupons(props) {
   const [selectedAsc, setSelectedAsc] = useState({ label: 'Desc', value: false });
 
   /*Available options for sort & filters */
-  const statusOptions = [{ label: 'Valid', value: 1 }, { label: 'Expired', value: 2 }];
-  const redeemedOptions = [{ label: 'Yes', value: true }, { label: 'No', value: false }];
+  const statusOptions = [
+    { label: 'All', value: 4 },
+    { label: 'Valid', value: 1 },
+    { label: 'Expired', value: 2 },
+  ];
+  const redeemedOptions = [
+    { label: 'All', value: 'All' },
+    { label: 'Yes', value: 'true' },
+    { label: 'No', value: 'false' },
+  ];
   const categoryOptions = [
-    { label: 'Food', value: 1 },
-    { label: 'Clothing', value: 2 },
-    { label: 'Drinks', value: 3 },
-    { label: 'Technology', value: 4 },
-    { label: 'Groceries', value: 5 },
-    { label: 'Coffee', value: 6 },
+    { label: 'All', value: 'All' },
+    { label: 'Food', value: 'Food' },
+    { label: 'Clothing', value: 'Clothing' },
+    { label: 'Drinks', value: 'Drinks' },
+    { label: 'Technology', value: 'Technology' },
+    { label: 'Groceries', value: 'Groceries' },
+    { label: 'Coffee', value: 'Coffee' },
   ];
   const sortOptions = [
     { label: 'Start Date', value: 'start_date' },
     { label: 'Expiry Date', value: 'expiry_date' },
     { label: 'Business', value: 'business_name' },
+    { label: 'Date Claimed', value: 'date_claimed' },
     { label: 'Date Used', value: 'date_used' },
   ];
   const directionOptions = [{ label: 'Asc', value: true }, { label: 'Desc', value: false }];
@@ -79,7 +89,7 @@ export default function Coupons(props) {
     /*Get the coupons according to the filters and sort selected */
     Auth.fetch({
       method: 'get',
-      url: `http://localhost:3001/${resourcePath}/Coupons?category_id=${category}&status_id=${status}&sortBy=${orderBy}&redeemed=${redeemed}&isAsc=${isAsc}`,
+      url: `http://localhost:3001/${resourcePath}/Coupons?category=${category}&status_id=${status}&sortBy=${orderBy}&redeemed=${redeemed}&isAsc=${isAsc}`,
       data: {},
       validateStatus: function(status) {
         return (status = 404);
@@ -143,19 +153,21 @@ export default function Coupons(props) {
               options={directionOptions}></Select>
           </Grid>
         </Grid>
-        {coupons.map(coupon => (
-          <Grid item key={coupon.coupon_id}>
-            <RouterLink to={`${match.url}/${coupon.coupon_id}`}>
-              <BatchInstance
-                description={coupon.description}
-                business_name={coupon.business_name}
-                discount={coupon.discount}
-                discount_type={coupon.discount_type}
-                expiry_date={coupon.expiry_date}
-              />
-            </RouterLink>
-          </Grid>
-        ))}
+        <div className="couponList">
+          {coupons.map(coupon => (
+            <Grid item key={coupon.coupon_id}>
+              <RouterLink to={`${match.url}/${coupon.coupon_id}`}>
+                <BatchInstance
+                  description={coupon.description}
+                  business_name={coupon.business_name}
+                  discount={coupon.discount}
+                  discount_type={coupon.discount_type}
+                  expiry_date={coupon.expiry_date}
+                />
+              </RouterLink>
+            </Grid>
+          ))}
+        </div>
       </Grid>
     </div>
   );
