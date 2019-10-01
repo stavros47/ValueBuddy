@@ -1,53 +1,56 @@
-import React, { useState, useEffect } from "react";
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
-import BasicAppBar from "./BasicAppBar";
-import AuthHelperMethods from "./AuthHelperMethods";
+import React, { useState, useEffect } from 'react';
+import {
+  Avatar,
+  Button,
+  CssBaseline,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  Link,
+  Grid,
+  Typography,
+  Container,
+} from '@material-ui/core';
 
-const Auth = new AuthHelperMethods("http://localhost:3001");
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import BasicAppBar from './BasicAppBar';
+import AuthHelperMethods from './AuthHelperMethods';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
-  "@global": {
+  '@global': {
     body: {
-      backgroundColor: theme.palette.common.white
-    }
+      backgroundColor: theme.palette.common.white,
+    },
   },
   paper: {
     marginTop: theme.spacing(3),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
-  }
+    margin: theme.spacing(3, 0, 2),
+  },
 }));
 
+const Auth = new AuthHelperMethods('http://localhost:3001');
+
 function Login(props) {
-  const [credentials, setCredentials] = useState({ email: "", password: "" });
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
   const classes = useStyles();
 
   useEffect(() => {
     if (Auth.loggedIn()) {
-      props.history.replace("/");
+      props.history.replace('/');
     }
   });
 
@@ -58,7 +61,7 @@ function Login(props) {
 
     setCredentials({
       ...credentials,
-      [name]: value
+      [name]: value,
     });
   }
 
@@ -71,7 +74,7 @@ function Login(props) {
           return alert("Sorry those credentials don't exist!");
         }
         props.handleLogin(res);
-        props.history.replace("/");
+        props.history.replace('/');
       })
       .catch(err => {
         alert(err);
@@ -127,8 +130,7 @@ function Login(props) {
               variant="contained"
               color="primary"
               className={classes.submit}
-              onClick={handleSubmit}
-            >
+              onClick={handleSubmit}>
               Sign In
             </Button>
             <Grid container>
@@ -142,10 +144,9 @@ function Login(props) {
                   href="#"
                   variant="body2"
                   onClick={e => {
-                    props.history.push("/signup");
+                    props.history.push('/signup');
                     e.preventDefault();
-                  }}
-                >
+                  }}>
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
