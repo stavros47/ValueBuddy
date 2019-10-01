@@ -140,9 +140,13 @@ export default function Batches(props) {
       method: 'get',
       url: `http://localhost:3001/${resourcePath}/Batches?sortBy=${selectedSort.value}&isAsc=${sortDirection.value}&status=${selectedStatus.value}&type=${selectedType.value}`,
       data: {},
+      validateStatus: function(status) {
+        return (status = 404);
+      },
     }).then(res => {
-      console.log(res.batches);
+      //console.log(res);
       if (res.batches) {
+        console.log(res.batches);
         setBatches(res.batches);
       }
     });
