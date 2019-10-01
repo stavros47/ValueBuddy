@@ -72,6 +72,8 @@ router.get('/:id', authorize(), function(req, res, next) {
         }
         res.status(200).json(response);
       });
+  } else {
+    res.status(404).json({ message: 'Customer not Found!', customer: {} });
   }
 });
 
@@ -205,10 +207,10 @@ router.put('/:id', authorize(Role.Customer), function(req, res, next) {
   )`
     )
     .then(data => {
-      if (data.rows === undefined || data.rows.length == 0) {
-        res.json({ message: 'Could not update Customer' });
+      if (data.rows === undefined || data.rows.length == 0 || !data.rows[0].update_customer) {
+        res.status(404).json({ message: 'Could not update Customer' });
       } else {
-        res.json({ result: data.rows });
+        res.status(200).json({ result: data.rows[0] });
       }
     })
     .catch(error => {
