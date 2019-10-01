@@ -140,7 +140,6 @@ router.post('/', function(req, res, next) {
 });
 /* update a business */
 /*cannot change email for now   ${req.body.email ? `'${req.body.email}'` : `NULL`}, */
-// ToDo: Validations and test unique email constraints
 router.put('/:id', authorize(Role.Business), function(req, res, next) {
   //Only the business with :id
   database
@@ -172,11 +171,14 @@ router.put('/:id', authorize(Role.Business), function(req, res, next) {
 /* GET all Batches of a specific business. */
 router.get('/:id/Batches', authorize(), function(req, res, next) {
   //all authorized users
+
   database
     .raw(
       `SELECT * FROM get_ordered_business_batches(${parseInt(req.params.id)},'${
-        req.query.status
-      }','${req.query.type}','${req.query.sortBy}',${req.query.isAsc})`
+        req.query.status ? req.query.status : `All`
+      }',  '${req.query.type ? req.query.type : `All`}','${
+        req.query.sortBy ? req.query.sortBy : `business_name`
+      }',${req.query.isAsc ? req.query.isAsc : false})`
     )
     .then(data => {
       if (data.rows === undefined || data.rows.length == 0) {
@@ -323,7 +325,7 @@ router.post('/:id/Templates', authorize(Role.Business), function(req, res, next)
       if (data.rows === undefined || data.rows.length == 0) {
         res.status(404).json({ message: 'Template not created!', template: {} });
       } else {
-        res.status(200).json({ template: data.rows });
+        res.status(201).json({ template: data.rows });
       }
     })
     .catch(error => {
@@ -404,7 +406,7 @@ router.post('/:id/Coupons', authorize(Role.Business), function(req, res, next) {
       if (data.rows !== undefined && data.rows.length != 0 && data.rows[0].redeem_coupon) {
         res.status(200).json({
           redeem_success: data.rows[0].redeem_coupon,
-          message: 'Coupon Succesfuly redeemed.',
+          message: 'Coupon Successfully redeemed.',
         });
       } else
         res.status(400).json({
@@ -431,7 +433,7 @@ router.get('/:id/Batches/:batch_id/Coupons', authorize(Role.Business), function(
       }
     });
 });
-
+/*Claim Coupon from batch*/
 router.post('/:id/Batches/:batch_id/Coupons', authorize(), function(req, res, next) {
   database
     .raw(
@@ -446,7 +448,7 @@ router.post('/:id/Batches/:batch_id/Coupons', authorize(), function(req, res, ne
         data.rows.length == 0 ||
         data.rows[0].claim_from_batch === -1
       ) {
-        res.status(404).json({
+        res.status(400).json({
           message: `Could not claim a coupon from batch: ${req.params.batch_id}`,
           isClaimed: false,
         });
